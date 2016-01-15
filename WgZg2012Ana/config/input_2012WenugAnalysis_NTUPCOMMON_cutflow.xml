@@ -1,0 +1,12 @@
+	<InputData Lumi="20.3" NEventsMax="-1" Type="data" Version="wenugvbs">
+          <In FileName="root://eosatlas.cern.ch//eos/atlas/atlascerngroupdisk/phys-sm/Vgamma_skim/CutFlow/mc12_8TeV.185304.Sherpa_CT10_Wenugamma2jetVBS.merge.NTUP_COMMON.e2366_s1581_s1586_r4485_r4540_p1675_tid01487466_00/NTUP_COMMON.01487466._000003.root.1" Lumi="4.37e+06" />
+	  <InputTree Name="physics" />
+	  <OutputTree Name="CollectionTree" />
+	</InputData>
+	<InputData Lumi="20.3" NEventsMax="-1" Type="data" Version="wenugQCD">
+          <In FileName="root://eosatlas.cern.ch//eos/atlas/atlascerngroupdisk/phys-sm/Vgamma_skim/CutFlow/mc12_8TeV.185683.Sherpa_CT10_enugammaPt10_VBFfilter.merge.NTUP_COMMON.e2941_s1773_s1776_r4485_r4540_p1675_tid01487461_00/NTUP_COMMON.01487461._000001.root.1" Lumi="4.37e+06" />
+	  <InputTree Name="physics" />
+	  <OutputTree Name="CollectionTree" />
+	</InputData>
+<!-- Total number of events processed: 112008 -->
+<!-- Total number of events processed: 112008 -->

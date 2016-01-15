@@ -1,0 +1,10 @@
+<InputData Lumi="" NEventsMax="-1" Type="MC" Version="147774.def1">
+  <In FileName="root://eosatlas.cern.ch//eos/atlas/user/m/mliu/Wg/AnalysisNtuple/MC12/147774.root" Lumi="1.23e+03" />
+  <InputTree Name="WgCandidates" />
+  <OutputTree Name="CollectionTree" />
+</InputData>
+<InputData Lumi="" NEventsMax="-1" Type="MC" Version="126739.def1">
+  <In FileName="root://eosatlas.cern.ch//eos/atlas/user/m/mliu/Wg/AnalysisNtuple/MC12/126739.root" Lumi="5.71e+04" />
+  <InputTree Name="WgCandidates" />
+  <OutputTree Name="CollectionTree" />
+</InputData>

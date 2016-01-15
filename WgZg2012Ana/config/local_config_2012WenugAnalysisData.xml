@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE JobConfiguration PUBLIC "" "JobConfig.dtd"[
+  <!ENTITY input2012 SYSTEM "input_wenugntuple_data.xml"> 
+  <!ENTITY input_smwz_d3pd_data_localoutput SYSTEM "input_smwz_d3pd_data_localoutput.xml"> 
+]>
+
+<JobConfiguration JobName="ExampleJob" OutputLevel="INFO">
+  <Library Name="libSFramePlugIns" />
+  <Library Name="libCintex" />
+  <Library Name="libSFrameCintex" />
+  <Library Name="libPATCore" />
+  <Library Name="libGoodRunsLists" />
+  <Library Name="libPileupReweighting" />
+  <Library Name="libReweightUtils" />
+  <Library Name="libMuonEfficiencyCorrections" />
+  <Library Name="libMuonMomentumCorrections" />
+  <Library Name="libegammaAnalysisUtils" />
+  <Library Name="libegammaEvent" />
+  <Library Name="libTrigMuonEfficiency" />
+  <Library Name="libMuonIsolationCorrection" />
+  <Library Name="libApplyJetCalibration" />
+  <Library Name="libElectronPhotonSelectorTools"/>
+  <Library Name="libMissingETUtility" />
+  <Library Name="libDukHep" />
+  <Library Name="libWgZg2012Ana"/>
+  <Package Name="SFrameCore.par" />
+  <Package Name="SFramePlugIns.par" />
+  <Package Name="SFrameCintex.par" />
+  <Package Name="RootCore.par" />
+  <Package Name="DukHep.par" />
+  <Package Name="WgZg2012Ana.par" />
+    <Cycle Name="WenugammaAnalysis" OutputDirectory="../SFrameOutputs/" PostFix="" TargetLumi="1.0" RunMode="PROOF" ProofServer="lite://" ProofNodes="8" ProofWorkDir="/afs/cern.ch/work/m/mliu/private/WgZgAnalysis/SFrameOutputs/" UseTreeCache="False">
+        &input2012;
+	<UserConfig>
+	  <Item Name="GoodRunList" Value="/afs/cern.ch/work/m/mliu/private/WgZgAnalysis/SFrameDuke/GRL/data12_8TeV.periodAllYear_HEAD_DQDefects-00-01-00_PHYS_StandardGRL_All_Good.xml"/> 
+	  <Item Name="IgnoreGRL" Value="false"/>
+	  <Item Name="BkgStudy" Value="ejet"/>
+	  <Item Name="FSRveto" Value="0"/>
+	  <Item Name="TriggerName1" Value="EF_e24vhi_medium1"/>
+	  <Item Name="TriggerName2" Value="EF_e60_medium1"/>
+	  <Item Name="nPVCut" Value="true"/>
+	  <Item Name="Trigger" Value="true"/>
+	  <Item Name="LeptonPt" Value="10000"/>
+	  <Item Name="LeptonVetoPt" Value="10000"/>
+	  <Item Name="LeptonCut" Value="true"/>
+	  <Item Name="LeptonVeto" Value="false"/>
+	  <Item Name="MetCut" Value="0"/>
+	  <Item Name="MtCut" Value="0"/>
+	  <Item Name="PhotonPt" Value="15000"/>
+	  <Item Name="PhotonIDCut" Value="true"/>
+	  <Item Name="dRLeptonGammaCut" Value="0.4"/>
+	  <Item Name="PhotonIsolation" Value="ph_Etcone30_pt_corrected"/>
+	  <Item Name="PhotonIsoValue" Value="4000"/>
+	  <Item Name="VBS" Value="false"/>
+	</UserConfig>
+    </Cycle>
+</JobConfiguration>

@@ -1,0 +1,7 @@
+r	trig_EF_el_pt	std::vector<float>*	m_trig_EF_el_pt
+r	trig_EF_el_eta	std::vector<float>*	m_trig_EF_el_eta
+r	trig_EF_el_phi	std::vector<float>*	m_trig_EF_el_phi
+r	trig_EF_el_EF_e22_medium	std::vector<int>*	m_trig_EF_el_EF_e22_medium
+r	el_L1_dr	std::vector<float>*	m_el_L1_dr
+r	el_L1_index	std::vector<int>*	m_el_L1_index
+r	trig_EF_el_n	Int_t	m_trig_EF_el_n

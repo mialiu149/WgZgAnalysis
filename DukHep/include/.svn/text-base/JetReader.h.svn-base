@@ -1,0 +1,92 @@
+////bin/dukhep_create_reader.py -n JetReader ../Macros/JetMacros.dat
+#ifndef JETREADER
+#define JETREADER 1
+#include <vector>
+#include <string>
+#include <iostream>
+#include "DukHep/include/DukHepFilter.h"
+#include "core/include/SCycleBaseNTuple.h"
+#include "TLorentzVector.h"
+#include "ApplyJetCalibration/ApplyJetCalibration.h"
+class JetReader {
+  public:
+  JetReader(SCycleBaseNTuple * o, const char * collname="jet");
+    virtual ~JetReader(){};
+    void SetColl(const char * collname) {
+      cname = std::string(collname);
+      std::cout << "Using jet collection name " << cname << std::endl;
+    };
+    std::string VarName(const char * s); 
+    void ConnectVariables(std::string treename);
+    void DeclareVariables();
+    void Reset();
+    void CopyToOutput();
+    void InitCalibTool(TString,TString,bool); 
+TLorentzVector CorrectedJet(int jeti,bool isData,float npv,float mu);
+bool IsSelectedJet(int jeti,bool isData,float npv,float mu);
+    //define your getters here
+    void FillFourMomentum(unsigned int il, TLorentzVector & vl) 
+    { vl.SetPtEtaPhiE(m_JetPt->at(il),m_JetEta->at(il),m_JetPhi->at(il),m_JetE->at(il));}
+    int GetNearestJet(float eta, float phi, float drmin) {
+      int imin(-1);
+      for (int i=0; i< m_JetEta->size(); ++i) { 
+	float d(DukHepFilter::deltaREtaPhi(eta-(*m_JetEta)[i],phi - (*m_JetPhi)[i]));
+	if (d < drmin) { drmin=d; imin=i; }
+      }
+      return imin;
+    }
+    int GetNearestJet(float eta, float phi, float en, float drmin, float demin) {
+      int imin(-1);
+      for (int i=0; i< m_JetEta->size(); ++i) { 
+	if (fabs(en - (*m_JetE)[i]) > demin) continue;
+	float d(DukHepFilter::deltaREtaPhi(eta-(*m_JetEta)[i],phi - (*m_JetPhi)[i]));
+	if (d < drmin) { drmin=d; imin=i; }
+      }
+      return imin;
+    }
+     bool IsLooserBadJet(  const float  &pt,
+              const float  &eta,
+              const float  &sumPtTrk,
+              const float  &LArQuality,
+              const float  &NegativeE,
+              const float  &emfrac,
+              const float  &hecf,
+              const float  &Timing,
+              const float  &fracSamplingMax,
+              const float  &HECQuality,
+              const float  &AverageLArQF )
+{
+  /*
+    All the unit should be MeV.
+    The pT should be container variables without smearing
+  */
+  float chf      = pt != 0 ? sumPtTrk/pt : 0 ;
+  float LArQmean = AverageLArQF / 65335. ;
+  // HEC spike
+  if( hecf>0.5 && fabs(HECQuality)>0.5 && LArQmean>0.8)           return true;
+  if( fabs(NegativeE)>60000./*MeV*/)                              return true;
+  // EM coherent noise
+  if( emfrac>0.95 && fabs(LArQuality)>0.8 && LArQmean>0.8 && fabs(eta)<2.8 )   return true;
+  // Cosmics and Beam background
+  if( emfrac<0.05 && chf<0.05 && fabs(eta)<2. )             return true;
+  if( emfrac<0.05 && fabs(eta)>2. )                         return true;
+  if( fracSamplingMax>0.99&&fabs(eta)<2)                    return true;
+  return false;
+} 
+  public:
+    SCycleBaseNTuple * owner;    
+    std::string cname;
+   JetCalibrationTool *myJES;
+    Int_t m_NumJets; //BAD
+    Int_t o_m_NumJets;
+    std::vector<float>* m_JetPt;
+    std::vector<float>* m_JetM;
+    std::vector<float>* m_JetEta;
+    std::vector<float>* m_JetPhi;
+    std::vector<float>* m_JetE;
+    std::vector<float>* m_JetWeightSV0;
+    std::vector<int>* m_JetIsBad;
+    std::vector<float>* m_JetBCH_CORR_JET;
+    std::vector<float>* m_JetBCH_CORR_CELL;
+};
+ #endif

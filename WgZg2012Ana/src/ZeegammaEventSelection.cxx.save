@@ -1,0 +1,503 @@
+// Localinclude(s):
+// $Id: ZeegammaEventSelection.cxx 140825 2013-03-18 17:32:22Z mliu $
+#include "../include/ZeegammaEventSelection.h"
+
+ClassImp( ZeegammaEventSelection );
+
+ZeegammaEventSelection::ZeegammaEventSelection()
+  : DukHepFilter(), 
+    m_cutflow( "cutflow", this ),
+    Ecounter("elflow",this),
+    Phcounter("Phflow",this),
+    icutflow(0), h_cutflow(0),
+    h_Ecutflow(0),
+    h_Phcutflow(0),
+    er(this),
+    phr(this),
+    jr(this,"jet_AntiKt4TopoEM"),
+    //Macro initializing the stl vectors that access the tree 
+    INIT_NULLS_CTOR
+{
+  //example job properties (sends data to your job via the xml file)
+  DeclareProperty( "IgnoreGRL", m_prop_skipgrl );
+  DeclareProperty( "isZjets", m_isZjets );
+  DeclareProperty( "BkgStudy", m_isBkgStudy );
+  DeclareProperty( "TriggerName", m_prop_triggername );
+  DeclareProperty( "PhotonIsolation", m_prop_phisoname );
+  DeclareProperty( "nPVCut", m_nPVCut);
+  DeclareProperty( "Trigger",m_Trigger);
+  DeclareProperty( "LeptonPt",m_LeptonPt);
+  DeclareProperty( "LeptonCut",m_LeptonCut);
+  DeclareProperty( "LeptonOSCut",m_LeptonOSCut);
+  DeclareProperty( "ZmassCut1",m_ZmassCut1);
+  DeclareProperty( "ZmassCut2",m_ZmassCut2);
+  DeclareProperty( "PhotonPt",m_PhotonPt);
+  DeclareProperty( "PhotonIDCut",m_PhotonIDCut);
+  DeclareProperty( "dRLeptonGammaCut",m_dRLeptonGammaCut);
+  DeclareProperty( "PhotonIsoValue",m_PhotonIsoValue);
+  SetLogName( GetName() );
+}
+
+ZeegammaEventSelection::~ZeegammaEventSelection() {
+}
+
+void ZeegammaEventSelection::BeginCycle() throw( SError ) {
+  DukHepFilter::setupGRL(); 
+  DukHepFilter::setupGRLOut(); 
+  //er.InitEnergyRescaler(); 
+  return;
+}
+
+void ZeegammaEventSelection::BeginInputData( const SInputData& inputData ) throw( SError ) {
+  //say something
+  m_logger << DEBUG << "Hello from BeginInputData." << SLogger::endmsg;
+  //macro of commands to set up the output tree (delete if you don't want an output tree)
+  DECLARE_WG("dummy")
+    ;
+  //do any needed initialization here.
+  m_cutflow->resize(11,0); 
+  Ecounter->resize(10,0); 
+  Phcounter->resize(7,0); 
+  h_cutflow = Book(TH1F("cf","Cut flow",11,-0.5,10.5 ));  
+  h_Ecutflow = Book(TH1F("cf_el","el Cut flow",11,-0.5,10.5 ));  
+  h_Phcutflow = Book(TH1F("cf_ph","ph Cut flow",11,-0.5,10.5 ));  
+ bool isdata;
+  if( ( inputData.GetType() == "data" ) || ( inputData.GetType() == "Data" )) isdata=true; 
+  m_logger << DEBUG << "Hello from Begininit energyrescaler." << SLogger::endmsg;
+  ///////pileup reweighting/////////////////
+  m_pileupTool = new Root::TPileupReweighting("nameOfTool");
+  m_pileupTool->UsePeriodConfig("MC12a");
+  m_pileupTool->SetUnrepresentedDataAction(2);
+  m_pileupTool->SetDataScaleFactors(1/1.11);
+  m_pileupTool->AddConfigFile("$SFRAME_DIR/../mc12a_defaults.prw.root");
+  m_pileupTool->AddLumiCalcFile("$SFRAME_DIR/../ilumicalc_histograms_None_178044-191933.root"); 
+  m_pileupTool->Initialize();
+  ////
+  er.InitEnergyRescaler("$ROOTCOREDIR/../egammaAnalysisUtils/share/EnergyRescalerData.root"); 
+  er.SetMC(!isdata); 
+  phr.SetMC(!isdata); 
+  TString jetAlgo="AntiKt4TopoEM";
+  TString JES_config_file = "$ROOTCOREDIR/../ApplyJetCalibration/data/CalibrationConfigs/JES_August2012.config"   ; 
+jr.InitCalibTool(jetAlgo,JES_config_file,isdata);
+return;
+}
+
+void ZeegammaEventSelection::BeginInputFile( const SInputData& inputData ) throw( SError ) {
+  int intype = STree::INPUT_TREE & STree::EVENT_TREE;
+  if  (! inputData.GetTrees(intype) ) {
+    m_logger << ERROR << "ZeegammaEventSelection needs an input tree!" << SLogger::endmsg; 
+    throw SError( SError::SkipCycle );
+  } else if  (inputData.GetTrees(intype)->size() != 1) {
+    m_logger << ERROR << "ZeegammaEventSelection got too many (" << inputData.GetTrees(intype)->size() 
+	     << ")input trees."  << SLogger::endmsg; 
+    throw SError( SError::SkipCycle );    
+  } else {
+    TString treename(inputData.GetTrees(intype)->at(0).treeName);
+    //macro of commands to read the input tree
+    CONNECT( treename.Data() )   
+      ;
+    //You might want to read some special branches for this analysis.  You can add them via
+    //ConnectVariable( treename.Data(), "branch_name", member_variable );
+    //This example allows you to change the trigger via the xml file
+    ConnectVariable( treename.Data(), m_prop_triggername.c_str(), m_LeptonTrigger  );
+    ConnectVariable( treename.Data(), m_prop_phisoname.c_str(), m_PhotonIsolation  );
+    er.ConnectVariables(treename.Data());
+    phr.ConnectVariables(treename.Data());
+    jr.ConnectVariables(treename.Data());
+  }
+  return;
+}
+
+///An example user function
+void ZeegammaEventSelection::IncrementCutFlow() throw ( SError ) {
+  if (icutflow < m_cutflow->size())
+    ( *m_cutflow )[ icutflow ]++;
+  else 
+    m_logger << WARNING << "Resize your cut flow! " << SLogger::endmsg;
+  h_cutflow->Fill(icutflow++);
+}
+bool ZeegammaEventSelection::OverlapRemovalFSR(bool isMC)
+{
+bool reject = false;
+for(int i =0;i<m_mc_n;i++)
+{
+if(m_mc_pdgId->at(i)==22)
+{
+for(int j = 0; j< (*m_mc_parent_index)[i].size();j++){
+//std::cout<<"checking parent type"<<std::endl;
+int motherindex=(*m_mc_parent_index)[i][j];
+float ph_eta=m_mc_eta->at(i);
+float ph_phi=m_mc_phi->at(i);
+float el_eta=m_mc_eta->at(motherindex);
+float el_phi=m_mc_phi->at(motherindex);
+float dr = sqrt((el_eta-ph_eta)*(el_eta-ph_eta)+(el_phi-ph_phi)*(el_phi-ph_phi));
+//std::cout<<dr<<" mother type "<<m_mc_pdgId->at(motherindex)<<std::endl;
+if(fabs(m_mc_pdgId->at(motherindex))==11) {reject=true;break;
+//std::cout<<reject<<std::endl;
+}
+}
+}
+}
+return reject;
+}
+///Main analysis function: this is executed for every entry in the tree.
+void ZeegammaEventSelection::ExecuteEvent( const SInputData &inputData, Double_t xsection_weight ) throw( SError ) {
+  icutflow=0;
+  //macro of commands to clear the output tree vectors. (delete if you don't want an output tree)
+  //RESETVAR
+ //   ;  
+  RESETVAR; 
+  RESETVAR_WG
+      ; 
+  // Start making cuts here.  When a cut is failed, throw a SkipEvent error.
+  m_logger << VERBOSE << "/** event passed all-events cut    **/" << SLogger::endmsg;
+  bool isdata = false;
+  if(inputData.GetType()=="data") isdata=true;
+  bool isMC = !isdata;
+  IncrementCutFlow();//total  number of events
+  if( !( m_prop_skipgrl ) && (( inputData.GetType() == "data" ) || ( inputData.GetType() == "Data" ))) {
+      if ( ! testGRL(m_RunNumber,m_lbn) )  throw SError( SError::SkipEvent );
+  }
+  //writexml(); 
+  bool reject = false;
+  if(m_isZjets) reject = OverlapRemovalFSR(isMC) ;   
+  //std::cout<<"reject"<<reject<<std::endl;
+  if(reject) throw SError (SError::SkipEvent);
+
+  IncrementCutFlow();//GRL
+  m_logger << VERBOSE << "/** event passed goodrun cut   **/" << SLogger::endmsg;
+  //---------------------------------------------------------//
+  //------------------primary vertex cut---------------------//
+  //---------------------------------------------------------//
+  if(m_nPVCut){
+   if (m_vxp_n < 1 || m_vxp_nTracks->at(0)< 3) throw SError(SError::SkipEvent);
+  } 
+  IncrementCutFlow();
+  m_logger << VERBOSE << "/** event passed npv cut   **/" << SLogger::endmsg;
+  //---------------------------------------------------------//
+  //------------------------trigger--------------------------//
+  //---------------------------------------------------------//
+  if( m_Trigger&&! m_LeptonTrigger ) throw SError( SError::SkipEvent ); 
+  m_logger << VERBOSE << "/** event passed trigger cut   **/" << SLogger::endmsg;
+  IncrementCutFlow();
+  //---------------------------------------------------------//
+  //---------------------LArHole veto------------------------//
+  //---------------------------------------------------------//
+  bool m_LArHoleVeto = false;
+  if(m_LArHoleVeto){
+  bool LArHoleEvent = false;
+  if ((!isdata && (m_RunNumber == 183003)) || (isdata && (m_RunNumber >=180614) && (m_RunNumber <185352)))
+  for (int i = 0; i<jr.m_NumJets; i++)
+  if (LArHole::simpleVeto(jr.m_JetPt->at(i), jr.m_JetEta->at(i), jr.m_JetPhi->at(i),
+  jr.m_JetBCH_CORR_JET->at(i), jr.m_JetBCH_CORR_CELL->at(i), 25000.))
+  {LArHoleEvent = true; break; }
+  if(LArHoleEvent) throw SError(SError::SkipEvent);
+  }
+  IncrementCutFlow();
+  m_logger << VERBOSE << "/** event passed LAr cleaning   **/" << SLogger::endmsg;
+//look at MET in Z events 
+float m_my_MET_LocHadTopo_etx;
+float m_my_MET_LocHadTopo_ety;
+float MET_LocHadTopo_et = m_MET_LocHadTopo_et;
+float MET_LocHadTopo_phi = m_MET_LocHadTopo_phi;
+float m_my_MET_MuonBoy_etx;
+float m_my_MET_MuonBoy_ety;
+float MET_MuonBoy_et = m_MET_MuonBoy_et;
+float MET_MuonBoy_phi = m_MET_MuonBoy_phi;
+float m_my_MET_RefMuon_Track_etx;
+float m_my_MET_RefMuon_Track_ety;
+float MET_x;
+float MET_y;
+float MET;
+float MET_RefMuon_Track_et =m_MET_RefMuon_Track_et;
+float MET_RefMuon_Track_phi =m_MET_RefMuon_Track_phi;
+
+  m_my_MET_LocHadTopo_etx = MET_LocHadTopo_et*(cos(MET_LocHadTopo_phi)); 
+  m_my_MET_LocHadTopo_ety = MET_LocHadTopo_et*(sin(MET_LocHadTopo_phi)); 
+
+  m_my_MET_MuonBoy_etx = MET_MuonBoy_et*(cos(MET_MuonBoy_phi)); 
+  m_my_MET_MuonBoy_ety = MET_MuonBoy_et*(sin(MET_MuonBoy_phi)); 
+
+  m_my_MET_RefMuon_Track_etx = MET_RefMuon_Track_et*(cos(MET_RefMuon_Track_phi)); 
+  m_my_MET_RefMuon_Track_ety = MET_RefMuon_Track_et*(sin(MET_RefMuon_Track_phi)); 
+
+  MET_x = m_my_MET_LocHadTopo_etx + m_my_MET_MuonBoy_etx - m_my_MET_RefMuon_Track_etx; 
+  MET_y = m_my_MET_LocHadTopo_ety + m_my_MET_MuonBoy_ety - m_my_MET_RefMuon_Track_ety; 
+
+  MET  = sqrt((MET_x*MET_x)+(MET_y*MET_y));
+//  if(m_Staco_EvtMET<25000) throw SError(SError::SkipEvent); 
+  //---------------------------------------------------------//
+  // Counting both good tight and good loose electrons//
+  //---------------------------------------------------------//
+
+  int TightElectronCount = 0;
+  int MediumElectronCount = 0;
+  std::vector<int> TightElectronIndex;
+  std::vector<int> MediumElectronIndex;
+  std::vector<TLorentzVector> SelectedEls;
+  std::vector<TLorentzVector> SelectedMEls;
+
+  int npv = 0;
+  for(int i = 0;i<m_vxp_n;i++)
+  {
+  if(m_vxp_nTracks->at(i) >=2 ) npv++; 
+  } 
+  m_logger << VERBOSE << "/** Start looping **/" << SLogger::endmsg;
+  er.SetNPV(npv);
+  er.SetEventNumber(m_EventNumber);
+  phr.SetNPV(npv);
+  phr.SetEventNumber(m_EventNumber);
+//std::cout<<"number of good electrons" << er.m_NumElectrons <<std::endl;
+  for (int i = 0; i<er.m_NumElectrons;i++)
+  {
+  m_logger << VERBOSE << "/** Start selection **/" << SLogger::endmsg;
+  bool TightElectron = er.IsGoodElectronEWKW(i,m_LeptonPt,Ecounter); 
+  m_logger << VERBOSE << "/** Tight Electron selected **/" << SLogger::endmsg;
+  bool MediumElectron = er.IsGoodElectronEWKZ(i,m_LeptonPt); 
+  m_logger << VERBOSE << "/** Loose Electron selected **/" << SLogger::endmsg;
+  TLorentzVector tmp;
+  er.FillElectronFourMomentum(i,tmp);
+  if(TightElectron) {
+  SelectedEls.push_back(tmp);
+  TightElectronCount++;
+  TightElectronIndex.push_back(i);
+}
+  if(MediumElectron){
+  SelectedMEls.push_back(tmp);
+  MediumElectronCount++;
+  MediumElectronIndex.push_back(i);
+   }  
+  }
+  //---------------------------------------------------------//
+  // electron selection, at least two good electron with pt>20GeV//
+  //---------------------------------------------------------//
+  if(m_LeptonCut&&MediumElectronCount < 2) throw SError(SError::SkipEvent);
+  //if(MediumElectronCount < 2) throw SError(SError::SkipEvent);
+  m_logger << VERBOSE << "/** event passed 2 Good Electron cut   **/" << SLogger::endmsg;
+  IncrementCutFlow();
+  //--sort medium electrons in pt-------------------------------//
+AnalysisUtils::SortParticlesPt(TightElectronIndex,SelectedEls);
+AnalysisUtils::SortParticlesPt(MediumElectronIndex,SelectedMEls);
+  m_logger << VERBOSE << "/** Sorted electrons according to their pt   **/" << SLogger::endmsg;
+//---- Z Mass cut---------//
+  TLorentzVector elv1 = SelectedMEls.at(0);
+  TLorentzVector elv2 = SelectedMEls.at(1);
+  m_logger << VERBOSE << "/** Got electron 4 vectors   **/" << SLogger::endmsg;
+  int LeadingElectronIndex = MediumElectronIndex.at(0);
+  int SLeadingElectronIndex= MediumElectronIndex.at(1);
+ 
+  TLorentzVector Zboson = elv1+elv2;
+  float Zmass = Zboson.M();  
+ Book(TH1F("pt_l1","pt_l1",150,5000,100000))->Fill(elv1.Pt());
+ Book(TH1F("pt_l2","pt_l2",150,5000,100000))->Fill(elv2.Pt());
+ Book(TH1F("eta_l1","eta_l1",150,-3.5,3.5))->Fill(elv1.Eta());
+ Book(TH1F("eta_l2","eta_l2",150,-3.5,3.5))->Fill(elv2.Eta());
+ Book(TH1F("phi_l1","phi_l1",150,-3.5,3.5))->Fill(elv1.Phi());
+ Book(TH1F("phi_l2","phi_l2",150,-3.5,3.5))->Fill(elv2.Phi());
+ Book(TH1F("E_l1","E_l1",150,5000,100000))->Fill(elv1.E());
+ Book(TH1F("E_l2","E_l2",150,5000,100000))->Fill(elv2.E());
+ Book(TH1F("Zmass_before","Z mass in all events",150,-5000,200000))->Fill(Zmass);
+ if((Zmass>m_ZmassCut2&&m_ZmassCut2>0)||Zmass<m_ZmassCut1) throw SError(SError::SkipEvent);
+ // if(Zmass<40000) throw SError(SError::SkipEvent);
+ Book(TH1F("Zmass","Z mass in events",150,-5000,200000))->Fill(Zmass);
+  IncrementCutFlow();
+  m_logger << VERBOSE << "/** event passed Z mass cut   **/" << SLogger::endmsg;
+  //---------------------------------------------------------//
+  //charge
+  //---------------------------------------------------------//
+  if(m_LeptonOSCut&&(er.m_ElectronCharge->at(LeadingElectronIndex)==er.m_ElectronCharge->at(SLeadingElectronIndex))) throw SError(SError::SkipEvent);
+  m_logger << VERBOSE << "/** event passed two opposite signed electrons cut   **/" << SLogger::endmsg;
+  IncrementCutFlow();
+  //Photon selection
+  int GoodPhotonCount = 0;
+  std::vector<int> GoodPhotonIndex;
+  std::vector<TLorentzVector> SelectedPhs;
+  for(int i = 0;i < phr.m_NumPhotons;i++)
+  {
+   TLorentzVector tmp;  
+   phr.PhotonFourVector(i,tmp);
+  float dr1 = elv1.DeltaR(tmp);//needed t
+  float dr2 = elv2.DeltaR(tmp);
+  if(phr.IsGoodPhoton(i,m_PhotonPt,m_isBkgStudy,Phcounter)&&dr1 > m_dRLeptonGammaCut && dr2 > m_dRLeptonGammaCut) 
+  //if(dr1 > m_dRLeptonGammaCut && dr2 > m_dRLeptonGammaCut) 
+ {
+  m_logger << VERBOSE << "/** selecting photon   **/" << SLogger::endmsg;
+  GoodPhotonCount++;
+  GoodPhotonIndex.push_back(i);
+  SelectedPhs.push_back(tmp); 
+ }  
+}
+  if(m_PhotonIDCut&&GoodPhotonCount == 0) throw SError(SError::SkipEvent);
+  m_logger << VERBOSE << "/** found at least one good photon**/" << SLogger::endmsg;
+  IncrementCutFlow();
+  // find leading pt photon
+  int leadingPtPhoton = AnalysisUtils::LeadingPtParticle(SelectedPhs);
+  TLorentzVector ph_lv;
+  int The_ph = GoodPhotonIndex.at(leadingPtPhoton);
+  AnalysisUtils::SortParticlesPt(GoodPhotonIndex,SelectedPhs);
+  //check if leading pt photon is isolated
+ float egamma_mass = (elv1+elv2+SelectedPhs.at(0)).M() ;
+ Book(TH1F("egamma_mass","egamma mass in events",150,-5000,200000))->Fill(egamma_mass);
+ float correctedIso = phr.CorrectedIso(The_ph,0,30); 
+// if(correctedIso > m_PhotonIsoValue) throw SError(SError::SkipEvent);
+  m_logger << VERBOSE << "/** photon is isolated   **/" << SLogger::endmsg;
+  IncrementCutFlow();
+  ph_lv.SetPtEtaPhiE(phr.m_PhotonClusterPt->at(The_ph),phr.m_PhotonClusterEta->at(The_ph),phr.m_PhotonClusterPhi->at(The_ph),phr.m_PhotonClusterE->at(The_ph));
+//  COPYVAR
+//    ;  
+
+bool isData = !isMC;
+// Jet selection and Corrections
+std::vector<TLorentzVector> SelectedJets;
+std::vector<int> SelectedJetIndex;
+for(int i = 0;i<jr.m_JetPt->size();i++)
+{
+  m_logger << VERBOSE << "/** calibrating jets   **/" << SLogger::endmsg;
+if(jr.IsSelectedJet(i,isData,npv,m_averageIntPerXing))  
+{
+TLorentzVector tmp;
+tmp = jr.CorrectedJet(i,isData,npv,m_averageIntPerXing);
+SelectedJetIndex.push_back(i);
+SelectedJets.push_back(tmp);
+  m_logger << VERBOSE << "/** saving jets   **/" << SLogger::endmsg;
+}
+  m_logger << VERBOSE << "/** move to the second one   **/" << SLogger::endmsg;
+}
+  m_logger << VERBOSE << "/** Everything done   **/" << SLogger::endmsg;
+AnalysisUtils::SortParticlesPt(SelectedJetIndex,SelectedJets);
+ for(int i=0;i<SelectedEls.size();i++)
+{ 
+  m_logger << VERBOSE << "/** save electrons   **/" << SLogger::endmsg;
+ o_m_TightLeptons_E.push_back(SelectedEls.at(i).E());
+ o_m_TightLeptons_Pt.push_back(SelectedEls.at(i).Pt());
+ o_m_TightLeptons_Eta.push_back(SelectedEls.at(i).Eta());
+ o_m_TightLeptons_Phi.push_back(SelectedEls.at(i).Phi());
+float corrected_isolation;
+corrected_isolation=er.GetElectronIso(TightElectronIndex.at(i),0,20);
+o_m_TightLeptonsEtConeIso20.push_back(corrected_isolation);
+corrected_isolation=er.GetElectronIso(TightElectronIndex.at(i),0,30);
+o_m_TightLeptonsEtConeIso30.push_back(corrected_isolation);
+corrected_isolation=er.GetElectronIso(TightElectronIndex.at(i),0,40);
+o_m_TightLeptonsEtConeIso40.push_back(corrected_isolation);
+corrected_isolation=er.GetElectronIso(TightElectronIndex.at(i),1,20);
+o_m_TightLeptonsTopoIso20.push_back(corrected_isolation);
+corrected_isolation=er.GetElectronIso(TightElectronIndex.at(i),1,30);
+o_m_TightLeptonsTopoIso30.push_back(corrected_isolation);
+corrected_isolation=er.GetElectronIso(TightElectronIndex.at(i),1,40);
+o_m_TightLeptonsTopoIso40.push_back(corrected_isolation);
+o_m_TightLeptonsPtConeIso20.push_back(er.m_ElectronPtcone20->at(TightElectronIndex.at(i)));
+o_m_TightLeptonsPtConeIso30.push_back(er.m_ElectronPtcone30->at(TightElectronIndex.at(i)));
+o_m_TightLeptonsPtConeIso40.push_back(er.m_ElectronPtcone40->at(TightElectronIndex.at(i)));
+float lepsf = 1;
+std::pair<float,float> sf_error;
+sf_error = er.GetScaleFactor(TightElectronIndex.at(i),39,m_RunNumber); 
+lepsf = sf_error.first;
+o_m_TightLeptonsScale.push_back(lepsf);
+} 
+ for(int i=0;i<SelectedMEls.size();i++)
+{
+ o_m_MediumLeptons_E.push_back(SelectedMEls.at(i).E());
+ o_m_MediumLeptons_Pt.push_back(SelectedMEls.at(i).Pt());
+ o_m_MediumLeptons_Eta.push_back(SelectedMEls.at(i).Eta());
+ o_m_MediumLeptons_Phi.push_back(SelectedMEls.at(i).Phi());
+float corrected_isolation;
+corrected_isolation=er.GetElectronIso(MediumElectronIndex.at(i),0,20);
+o_m_MediumLeptonsEtConeIso20.push_back(corrected_isolation);
+corrected_isolation=er.GetElectronIso(MediumElectronIndex.at(i),0,30);
+o_m_MediumLeptonsEtConeIso30.push_back(corrected_isolation);
+corrected_isolation=er.GetElectronIso(MediumElectronIndex.at(i),0,40);
+o_m_MediumLeptonsEtConeIso40.push_back(corrected_isolation);
+corrected_isolation=er.GetElectronIso(MediumElectronIndex.at(i),1,20);
+o_m_MediumLeptonsTopoIso20.push_back(corrected_isolation);
+corrected_isolation=er.GetElectronIso(MediumElectronIndex.at(i),1,30);
+ Book(TH1F("el_topoEtcone30","el_topoEtcone30",150,5000,30000))->Fill(fabs(er.m_ElectronTopoIsocone30->at(MediumElectronIndex.at(i))));
+Book(TH1F("el_topoEtcone30_corrected","el_topoEtcone30_corrected",50,-5000,30000))->Fill(fabs(corrected_isolation));
+o_m_MediumLeptonsTopoIso30.push_back(corrected_isolation);
+corrected_isolation=er.GetElectronIso(MediumElectronIndex.at(i),1,40);
+o_m_MediumLeptonsTopoIso40.push_back(corrected_isolation);
+
+o_m_MediumLeptonsPtConeIso20.push_back(er.m_ElectronPtcone20->at(MediumElectronIndex.at(i)));
+o_m_MediumLeptonsPtConeIso30.push_back(er.m_ElectronPtcone30->at(MediumElectronIndex.at(i)));
+o_m_MediumLeptonsPtConeIso40.push_back(er.m_ElectronPtcone40->at(MediumElectronIndex.at(i)));
+float lepsf = 1;
+std::pair<float,float> sf_error;
+sf_error = er.GetScaleFactor(MediumElectronIndex.at(i),39,m_RunNumber); 
+lepsf = sf_error.first;
+o_m_MediumLeptonsScale.push_back(lepsf);
+} 
+
+ for(int i=0;i<SelectedPhs.size();i++)
+{
+ m_logger << VERBOSE << "/** save photons   **/" << SLogger::endmsg;
+ o_m_GoodPhotons_E.push_back(SelectedPhs.at(i).E());
+ o_m_GoodPhotons_Pt.push_back(SelectedPhs.at(i).Pt());
+ o_m_GoodPhotons_Eta.push_back(SelectedPhs.at(i).Eta());
+ o_m_GoodPhotons_Phi.push_back(SelectedPhs.at(i).Phi());
+ int phindex=GoodPhotonIndex.at(i);
+ float correctedIso;
+ correctedIso=phr.CorrectedIso(phindex,0,20); 
+ o_m_GoodPhotonEtConeIso20.push_back(correctedIso); 
+ correctedIso=phr.CorrectedIso(phindex,0,30); 
+ o_m_GoodPhotonEtConeIso30.push_back(correctedIso); 
+ correctedIso=phr.CorrectedIso(phindex,0,40); 
+ o_m_GoodPhotonEtConeIso40.push_back(correctedIso); 
+ correctedIso=phr.CorrectedIso(phindex,1,20); 
+ o_m_GoodPhotonTopoIso20.push_back(correctedIso); 
+ //correctedIso=phr.CorrectedIso(isMC,phindex,m_EventNumber,1,30); 
+ //o_m_GoodPhotonTopoIso30.push_back(correctedIso); 
+ correctedIso=phr.CorrectedIso(phindex,1,40); 
+ o_m_GoodPhotonTopoIso40.push_back(correctedIso); 
+//save track isolation 
+o_m_GoodPhotonPtConeIso20.push_back(phr.m_PhotonPtCone20->at(GoodPhotonIndex.at(i)));
+o_m_GoodPhotonPtConeIso30.push_back(phr.m_PhotonPtCone30->at(GoodPhotonIndex.at(i)));
+o_m_GoodPhotonPtConeIso40.push_back(phr.m_PhotonPtCone40->at(GoodPhotonIndex.at(i)));
+ m_logger << VERBOSE << "/** save photons track isolation  **/" << SLogger::endmsg;
+ std::vector<double> showershapes=phr.PhotonShowerShapes(GoodPhotonIndex.at(i));
+ std::vector<int> conversions;
+ conversions.push_back(phr.m_PhotonIsConv->at(GoodPhotonIndex.at(i)));
+ conversions.push_back(m_ph_nSingleTrackConv->at(GoodPhotonIndex.at(i)));
+ conversions.push_back(m_ph_nDoubleTrackConv->at(GoodPhotonIndex.at(i)));
+ o_m_GoodPhotons_conversion.push_back( conversions); 
+ o_m_GoodPhotons_showershape.push_back(showershapes);
+} 
+  o_m_METx=MET_x;
+  o_m_METy=MET_y;
+  o_m_Mll = Zmass;
+  o_m_Mllg = egamma_mass;
+ m_logger << VERBOSE << "/** save MET   **/" << SLogger::endmsg;
+ o_m_weights.push_back(xsection_weight); 
+ float combinedweight = 1;
+ if(isMC){ combinedweight = m_pileupTool->GetCombinedWeight(m_RunNumber,m_mc_channel_number,m_averageIntPerXing); 
+o_m_weights.push_back(combinedweight);
+}
+ COPYVAR_WG
+    ;  
+  return;
+}
+
+void ZeegammaEventSelection::EndMasterInputData( const SInputData& ) throw( SError ) {
+  m_logger << INFO << "End of input data." << SLogger::endmsg;
+/* for(int i =0;i<10;i++){
+  h_Ecutflow->SetBinContent(i,(*Ecounter)[i]);
+ }   
+ for(int i = 0; i<7;i++)
+ {
+  h_Phcutflow->SetBinContent(i,(*Phcounter)[i]); 
+ }
+  if ( m_cutflow->size() ==11 ) {
+   m_logger << INFO << "(C0)  Number of input events:                       " << ( *m_cutflow )[ 0 ] <<"  Cut Efficiency: "<<( *m_cutflow )[ 0 ]/( *m_cutflow )[ 0 ]<<SLogger::endmsg;
+    m_logger << INFO << "(C1)  Number of events passing goodrun flag:        " << ( *m_cutflow )[ 1 ] <<"  Cut Efficiency: "<<( *m_cutflow )[ 1 ]/( *m_cutflow )[ 0 ]<<SLogger::endmsg;
+    m_logger << INFO << "(C2)  Number of events passing primary vertex:      " << ( *m_cutflow )[ 2 ] <<"  Cut Efficiency: "<<( *m_cutflow )[ 2 ]/( *m_cutflow )[ 1 ]<< SLogger::endmsg;
+    m_logger << INFO << "(C3)  Number of events passing trigger              " << ( *m_cutflow )[ 3 ] <<"  Cut Efficiency: "<<( *m_cutflow )[ 3 ]/( *m_cutflow )[ 2 ]<< SLogger::endmsg;
+    m_logger << INFO << "(C4)  Number of events passing LArHole veto         " << ( *m_cutflow )[ 4 ] <<"  Cut Efficiency: "<<( *m_cutflow )[ 4 ]/( *m_cutflow )[ 3 ]<< SLogger::endmsg;
+    m_logger << INFO << "(C5)  Number of events passing lepton selection:    " << ( *m_cutflow )[ 5 ] <<"  Cut Efficiency: "<<( *m_cutflow )[ 5 ]/( *m_cutflow )[ 4 ]<< SLogger::endmsg;
+    m_logger << INFO << "(C6)  Number of events passing opposite sign el:    " << ( *m_cutflow )[ 6 ] <<"  Cut Efficiency: "<<( *m_cutflow )[ 6 ]/( *m_cutflow )[ 5 ]<< SLogger::endmsg;
+    m_logger << INFO << "(C7)  Number of events passing Z mass cut:          " << ( *m_cutflow )[ 7 ] <<"  Cut Efficiency: "<<( *m_cutflow )[ 7 ]/( *m_cutflow )[ 6 ]<< SLogger::endmsg;
+    m_logger << INFO << "(C8)  Number of events passing photon ID cut:       " << ( *m_cutflow )[ 8 ] <<"  Cut Efficiency: "<<( *m_cutflow )[ 8 ]/( *m_cutflow )[ 7 ]<< SLogger::endmsg;
+    m_logger << INFO << "(C9)  Number of events passing photon isolation cut:" << ( *m_cutflow )[ 9 ] <<"  Cut Efficiency: "<<( *m_cutflow )[ 9 ]/( *m_cutflow )[ 8 ]<< SLogger::endmsg;
+  } else {
+    m_logger << WARNING << "It looks like your job didn't run." << SLogger::endmsg;
+  }
+*/  
+ return;
+}

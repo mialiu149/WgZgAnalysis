@@ -1,0 +1,6 @@
+svn co https://sframe.svn.sourceforge.net/svnroot/sframe/SFrame/trunk SFrame
+cd SFrame
+patch -p0 -i ../PatchMakefile.diff
+source setup.sh
+grep ROOTCOREDIR $SFRAME_DIR/Makefile.common || sed -e 's#-I./#-I./ -I$(ROOTCOREDIR)/include -I$(SFRAME_DIR)/..#' -i.bak $SFRAME_DIR/Makefile.common
+#sed -e 's#-I./#-I./ -I$(SFRAME_DIR)/..#' -i.bak SFrame/Makefile.common

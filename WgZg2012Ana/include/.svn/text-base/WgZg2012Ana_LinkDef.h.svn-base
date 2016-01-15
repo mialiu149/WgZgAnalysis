@@ -1,0 +1,30 @@
+// Dear emacs, this is -*- c++ -*-
+// $Id$
+#ifdef __CINT__
+
+#pragma link off all globals;
+#pragma link off all classes;
+#pragma link off all functions;
+
+#pragma link C++ nestedclass;
+//#pragma link C++ class Cintex;
+#pragma link C++ class vector<bool>;
+#pragma link C++ class vector<char>;
+#pragma link C++ class vector<unsigned int>;
+#pragma link C++ class vector<bool>;
+#pragma link C++ class vector<bool>;
+#pragma link C++ class vector<bool>;
+#pragma link C++ class vector<bool>;
+
+// Add the declarations of your cycles, and any other classes for which you
+// want to generate a dictionary, here. The usual format is:
+//
+// #pragma link C++ class MySuperClass+;
+#pragma link C++ class DataSkim+;
+#pragma link C++ class DataMuonSkim+;
+#pragma link C++ class ZeegammaEventSelection+;
+#pragma link C++ class WenugammaEventSelection+;
+//#pragma link C++ class Zmmgamma2011EventSelection+;
+//#pragma link C++ class HzzRecoAnaCycle+;
+
+#endif // __CINT__

@@ -1,0 +1,830 @@
+// Localinclude(s):
+// $Id: ZmmgammaEventSelection.cxx 126811 2013-01-15 20:25:36Z mliu $
+#include "../include/ZmmgammaEventSelection.h"
+#include <utility>
+
+ClassImp( ZmmgammaEventSelection );
+
+ZmmgammaEventSelection::ZmmgammaEventSelection()
+  : DukHepFilter(), 
+    m_cutflow( "cutflow", this ),
+    Mcounter("muflow",this),
+    Phcounter("Phflow",this),
+    Ecounter("eflow",this),
+    icutflow(0), h_cutflow(0),
+    h_Mcutflow(0),
+    h_Phcutflow(0),
+    mur(this, "mu_staco"),
+    phr(this),
+    er(this),
+    jr(this,"jet_AntiKt4TopoEM"),
+    //Macro initializing the stl vectors that access the tree 
+    INIT_NULLS_CTOR
+{
+  //example job properties (sends data to your job via the xml file)
+  DeclareProperty( "IgnoreGRL", m_prop_skipgrl );
+  DeclareProperty( "TriggerName1", m_prop_triggername1 );
+  DeclareProperty( "TriggerName2", m_prop_triggername2 );
+  DeclareProperty( "TriggerName3", m_prop_triggername3 );
+  DeclareProperty( "TriggerName4", m_prop_triggername4 );
+  DeclareProperty( "PhotonIsolation", m_prop_phisoname );
+  DeclareProperty( "nPVCut", m_nPVCut);
+  DeclareProperty( "Trigger",m_Trigger);
+  DeclareProperty( "LeptonPt",m_LeptonPt);
+  DeclareProperty( "LeptonCut",m_LeptonCut);
+  DeclareProperty( "LeptonOSCut",m_LeptonOSCut);
+  DeclareProperty( "ZmassCut1",m_ZmassCut1);
+  DeclareProperty( "ZmassCut2",m_ZmassCut2);
+  DeclareProperty( "PhotonPt",m_PhotonPt);
+  DeclareProperty( "PhotonIDCut",m_PhotonIDCut);
+  DeclareProperty( "dRLeptonGammaCut",m_dRLeptonGammaCut);
+  DeclareProperty( "dRGammaGammaCut",m_dRGammaGammaCut); 
+ DeclareProperty( "PhotonIsoValue",m_PhotonIsoValue);
+  SetLogName( GetName() );
+}
+
+ZmmgammaEventSelection::~ZmmgammaEventSelection() {
+}
+
+void ZmmgammaEventSelection::BeginCycle() throw( SError ) {
+  DukHepFilter::setupGRL(); 
+  DukHepFilter::setupGRLOut(); 
+  return;
+}
+
+void ZmmgammaEventSelection::BeginInputData( const SInputData& inputData ) throw( SError ) {
+  //say something
+  m_logger << DEBUG << "Hello from BeginInputData." << SLogger::endmsg;
+  //macro of commands to set up the output tree (delete if you don't want an output tree)
+  //DIFFERENCE
+  DECLARE_WG("dummy")
+    ;
+  //do any needed initialization here.
+  m_cutflow->resize(15,0); 
+  Ecounter->resize(20,0);
+  Mcounter->resize(15,0); 
+  Phcounter->resize(8,0); 
+  h_cutflow = Book(TH1F("cf","Cut flow",15,-0.5,14.5 ));  
+  h_Mcutflow = Book(TH1F("cf_mu","mu Cut flow",14,-0.5,14.5 ));  
+  h_Phcutflow = Book(TH1F("cf_ph","ph Cut flow",8,-0.5,7.5 ));  
+ bool isdata;
+  if( ( inputData.GetType() == "data" ) || ( inputData.GetType() == "Data" )) isdata=true; 
+else{
+isdata= false;
+}
+  isdata = true;
+isMC = !isdata; 
+isTruth = false;
+ m_logger << DEBUG << "Hello from Begininit energyrescaler." << SLogger::endmsg;
+  ///////pileup reweighting/////////////////
+  m_pileupTool = new Root::TPileupReweighting("nameOfTool");
+  m_pileupTool->UsePeriodConfig("MC12a");
+  m_pileupTool->SetUnrepresentedDataAction(2);
+  m_pileupTool->SetDataScaleFactors(1/1.11);
+  m_pileupTool->AddConfigFile("$ROOTCOREDIR/../PileupReweighting/share/mc12a_defaults.prw.root");
+  m_pileupTool->AddLumiCalcFile("$SFRAME_DIR/../ilumicalc_histograms_None_200841-211697.root"); 
+  m_pileupTool->Initialize();
+  ////
+  mur.SetMC(isMC);
+  phr.SetMC(isMC);
+  er.SetMC(isMC);
+   DRcut = 0;
+m_Rescaler = new egRescaler::EnergyRescalerUpgrade();
+ m_Rescaler->Init("$ROOTCOREDIR/../egammaAnalysisUtils/share/EnergyRescalerData.root","2012","es2012");
+
+mcp_smear = new MuonSmear::SmearingClass();
+mcp_smear->SetAlgoSmearRelDir("Data12","staco","q_pT","Rel17.2","/home/jvm8/packages/MuonMomentumCorrections/share/");
+mcp_smear->UseScale(1);
+mcp_smear->UseImprovedCombine();
+m_MCPsf = new Analysis::AnalysisMuonConfigurableScaleFactors("/home/jvm8/packages/MuonEfficiencyCorrections/share/","STACO_CB_2012_SF.txt","GeV",Analysis::AnalysisMuonConfigurableScaleFactors::AverageOverRuns);
+m_MCPsf->Initialise();
+  TString jetAlgo="AntiKt4TopoEM";
+//  TString JES_config_file = "$ROOTCOREDIR/../ApplyJetCalibration/data/CalibrationConfigs/JES_August2012.config"; 
+//jr.InitCalibTool(jetAlgo,JES_config_file,isdata);
+return;
+}
+
+void ZmmgammaEventSelection::BeginInputFile( const SInputData& inputData ) throw( SError ) {
+int intype = STree::INPUT_TREE & STree::EVENT_TREE;
+  if  (! inputData.GetTrees(intype) ) {
+    m_logger << ERROR << "ZmmgammaEventSelection needs an input tree!" << SLogger::endmsg; 
+    throw SError( SError::SkipCycle );
+  } else if  (inputData.GetTrees(intype)->size() != 1) {
+    m_logger << ERROR << "ZmmgammaEventSelection got too many (" << inputData.GetTrees(intype)->size() 
+	     << ")input trees."  << SLogger::endmsg; 
+    throw SError( SError::SkipCycle );    
+  } else {
+    TString treename(inputData.GetTrees(intype)->at(0).treeName);
+    //macro of commands to read the input tree
+    CONNECT( treename.Data() )   
+      ;
+    if(isMC)
+    CONNECTTRUTH( treename.Data() )
+      ;
+
+    //You might want to read some special branches for this analysis.  You can add them via
+    //ConnectVariable( treename.Data(), "branch_name", member_variable );
+    //This example allows you to change the trigger via the xml file
+    ConnectVariable( treename.Data(), m_prop_triggername1.c_str(), m_LeptonTrigger1  );
+    ConnectVariable( treename.Data(), m_prop_triggername2.c_str(), m_LeptonTrigger2  );
+    ConnectVariable( treename.Data(), m_prop_triggername3.c_str(), m_LeptonTrigger3  );
+    ConnectVariable( treename.Data(), m_prop_triggername4.c_str(), m_LeptonTrigger4  );
+    ConnectVariable( treename.Data(), m_prop_phisoname.c_str(), m_PhotonIsolation  );
+
+
+    mur.ConnectVariables(treename.Data());
+    phr.ConnectVariables(treename.Data());
+//er.ConnectVariables(treename.Data());
+//    jr.ConnectVariables(treename.Data());
+  }
+  return;
+}
+
+///An example user function
+void ZmmgammaEventSelection::IncrementCutFlow() throw ( SError ) {
+ if (icutflow < m_cutflow->size())
+    ( *m_cutflow )[ icutflow ]++;
+  else 
+    m_logger << WARNING << "Resize your cut flow! " << SLogger::endmsg;
+  h_cutflow->Fill(icutflow++);
+}
+/*bool ZmmgammaEventSelection::OverlapRemovalFSR(bool isMC)
+{
+bool reject = false;
+for(int i =0;i<m_mc_n;i++)
+{
+//DIFFERENCE
+if(m_mc_pdgId->at(i)==22)
+{
+for(int j = 0; j< (*m_mc_parent_index)[i].size();j++){
+//std::cout<<"checking parent type"<<std::endl;
+int motherindex=(*m_mc_parent_index)[i][j];
+float ph_eta=m_mc_eta->at(i);
+float ph_phi=m_mc_phi->at(i);
+float mu_eta=m_mc_eta->at(motherindex);
+float mu_phi=m_mc_phi->at(motherindex);
+float dr = sqrt((mu_eta-ph_eta)*(mu_eta-ph_eta)+(mu_phi-ph_phi)*(mu_phi-ph_phi));
+//std::cout<<dr<<" mother type "<<m_mc_pdgId->at(motherindex)<<std::endl;
+if(fabs(m_mc_pdgId->at(motherindex))==11) {reject=true;break;
+//std::cout<<reject<<std::endl;
+}
+}
+}
+}
+return reject;
+}
+*/
+///Main analysis function: this is executed for every entry in the tree.
+
+int ZmmgammaEventSelection::DrPassed(bool quick, int i , int TightMuonCount, int TightElectronCount, std::vector<TLorentzVector> SelectedMus, std::vector<TLorentzVector> SelectedEls, TLorentzVector tmp, std::vector<int> GoodPhotonIndex, std::vector<TLorentzVector> SelectedPhs, vector<pair<TLorentzVector,int> > vecphotons) throw ( SError ){
+int GoodPhotonCount = 0;
+	if(quick){
+	if(TightMuonCount > 1 && TightElectronCount == 0){
+	float dr1 = SelectedMus[0].DeltaR(tmp);//needed t
+	float dr2 = SelectedMus[1].DeltaR(tmp);
+	 if(dr1 > m_dRLeptonGammaCut && dr2 > m_dRLeptonGammaCut)
+	 {
+	  m_logger << VERBOSE << "/** selecting photon   **/" << SLogger::endmsg;
+	  GoodPhotonCount++;
+	  GoodPhotonIndex.push_back(i);
+	  SelectedPhs.push_back(tmp);
+	vecphotons.push_back( make_pair(tmp,i) );
+	}
+	}
+	return GoodPhotonCount;
+}
+
+
+if(TightMuonCount > 1){
+float dr1 = SelectedMus[0].DeltaR(tmp);//needed t
+float dr2 = SelectedMus[1].DeltaR(tmp); 
+ if(dr1 > m_dRLeptonGammaCut && dr2 > m_dRLeptonGammaCut)
+ {
+if(TightElectronCount > 1){
+float dr3 = SelectedEls[0].DeltaR(tmp);
+float dr4 = SelectedEls[1].DeltaR(tmp);
+if(dr3 > m_dRLeptonGammaCut && dr4 > m_dRLeptonGammaCut)
+ {
+  m_logger << VERBOSE << "/** selecting photon   **/" << SLogger::endmsg;
+  GoodPhotonCount++;
+  GoodPhotonIndex.push_back(i);
+  SelectedPhs.push_back(tmp);
+vecphotons.push_back( make_pair(tmp,i) );
+}
+}
+else if(TightElectronCount > 0){
+float dr3 = SelectedEls[0].DeltaR(tmp);
+if(dr3 > m_dRLeptonGammaCut)
+ {
+  m_logger << VERBOSE << "/** selecting photon   **/" << SLogger::endmsg;
+  GoodPhotonCount++;
+  GoodPhotonIndex.push_back(i);
+  SelectedPhs.push_back(tmp);
+vecphotons.push_back( make_pair(tmp,i) );
+}
+}
+else{
+  m_logger << VERBOSE << "/** selecting photon   **/" << SLogger::endmsg;
+  GoodPhotonCount++;
+  GoodPhotonIndex.push_back(i);
+  SelectedPhs.push_back(tmp);
+ vecphotons.push_back( make_pair(tmp,i) );
+}
+}
+}
+
+else if(TightMuonCount ==1){
+float dr1 = SelectedMus[0].DeltaR(tmp);//needed t
+if(dr1 > m_dRLeptonGammaCut){
+if(TightElectronCount > 1){
+float dr3 = SelectedEls[0].DeltaR(tmp);
+float dr4 = SelectedEls[1].DeltaR(tmp);
+if(dr3 > m_dRLeptonGammaCut && dr4 > m_dRLeptonGammaCut)
+ {
+  m_logger << VERBOSE << "/** selecting photon   **/" << SLogger::endmsg;
+  GoodPhotonCount++;
+  GoodPhotonIndex.push_back(i);
+  SelectedPhs.push_back(tmp);
+vecphotons.push_back( make_pair(tmp,i) );
+}
+}
+else if(TightElectronCount > 0){
+float dr3 = SelectedEls[0].DeltaR(tmp);
+if(dr3 > m_dRLeptonGammaCut)
+ {
+  m_logger << VERBOSE << "/** selecting photon   **/" << SLogger::endmsg;
+  GoodPhotonCount++;
+  GoodPhotonIndex.push_back(i);
+  SelectedPhs.push_back(tmp);
+vecphotons.push_back( make_pair(tmp,i) );
+}
+}
+else{
+  m_logger << VERBOSE << "/** selecting photon   **/" << SLogger::endmsg;
+  GoodPhotonCount++;
+  GoodPhotonIndex.push_back(i);
+  SelectedPhs.push_back(tmp);
+vecphotons.push_back( make_pair(tmp,i) );
+}
+
+}
+
+}
+else{
+if(TightElectronCount > 1){
+float dr3 = SelectedEls[0].DeltaR(tmp);
+float dr4 = SelectedEls[1].DeltaR(tmp);
+if(dr3 > m_dRLeptonGammaCut && dr4 > m_dRLeptonGammaCut)
+ {
+  m_logger << VERBOSE << "/** selecting photon   **/" << SLogger::endmsg;
+  GoodPhotonCount++;
+  GoodPhotonIndex.push_back(i);
+  SelectedPhs.push_back(tmp);
+vecphotons.push_back( make_pair(tmp,i) );
+}
+}
+else if(TightElectronCount > 0){
+float dr3 = SelectedEls[0].DeltaR(tmp);
+if(dr3 > m_dRLeptonGammaCut)
+ {
+  m_logger << VERBOSE << "/** selecting photon   **/" << SLogger::endmsg;
+  GoodPhotonCount++;
+  GoodPhotonIndex.push_back(i);
+  SelectedPhs.push_back(tmp);
+vecphotons.push_back( make_pair(tmp,i) );
+}
+}
+else{
+  m_logger << VERBOSE << "/** selecting photon   **/" << SLogger::endmsg;
+  GoodPhotonCount++;
+  GoodPhotonIndex.push_back(i);
+  SelectedPhs.push_back(tmp);
+vecphotons.push_back( make_pair(tmp,i) );
+}
+}
+return GoodPhotonCount;
+}
+
+int ZmmgammaEventSelection::TallyMuons(int TightMuonCount, std::vector<TLorentzVector> SelectedMus, std::vector<int> TightMuonIndex, TLorentzVector muv1, TLorentzVector muv2, int LeadingMuonIndex, int SLeadingMuonIndex){
+if(TightMuonCount > 1){
+AnalysisUtils::SortParticlesPt(TightMuonIndex,SelectedMus);
+m_logger << VERBOSE << "/** Sorted electrons according to their pt   **/" << SLogger::endmsg;
+ muv1 = SelectedMus.at(0);
+ muv2 = SelectedMus.at(1);
+m_logger << VERBOSE << "/** Got electron 4 vectors   **/" << SLogger::endmsg;
+LeadingMuonIndex = TightMuonIndex.at(0);
+SLeadingMuonIndex= TightMuonIndex.at(1);
+}
+else if(TightMuonCount > 0){
+AnalysisUtils::SortParticlesPt(TightMuonIndex,SelectedMus);
+m_logger << VERBOSE << "/** Sorted electrons according to their pt   **/" << SLogger::endmsg;
+LeadingMuonIndex = TightMuonIndex.at(0);
+ muv1 = SelectedMus.at(0);
+}
+return TightMuonCount;
+}
+
+int ZmmgammaEventSelection::ElSelection(int TightMuonCount, TLorentzVector muv1, TLorentzVector muv2, std::vector<TLorentzVector> SelectedEls,std::vector<int>  TightElectronIndex){
+	int TightElectronCount = 0;
+	for(int i = 0; i < er.m_NumElectrons; i++){
+if(er.IsGoodElectronEWKZ(i, m_LeptonPt)){
+  TLorentzVector tmp;
+  er.FillElectronFourMomentum(i,tmp);
+if(TightMuonCount > 1){
+float dr1 = muv1.DeltaR(tmp);//needed t
+float dr2 = muv2.DeltaR(tmp);
+if(dr1> .1 && dr2 >.2){
+  SelectedEls.push_back(tmp);
+  TightElectronCount++;
+  TightElectronIndex.push_back(i);
+}
+}
+else if(TightMuonCount > 0){
+float dr1 = muv1.DeltaR(tmp);
+if(dr1> .1){
+  SelectedEls.push_back(tmp);
+  TightElectronCount++;
+  TightElectronIndex.push_back(i);
+}
+}
+else{
+  SelectedEls.push_back(tmp);
+  TightElectronCount++;
+  TightElectronIndex.push_back(i);
+}
+}
+}
+
+AnalysisUtils::SortParticlesPt(TightElectronIndex,SelectedEls);
+return TightElectronCount;
+}
+
+
+int ZmmgammaEventSelection::TruthPhotons(std::vector<TLorentzVector> SelectedPhs, bool fid){
+int goodphotoncount = 0;
+    // photon
+    for(int i = 0; i< m_mc_n; i++){
+    if (abs(m_mc_pdgId->at(i)) == 22) {
+   if (m_mc_status->at(i) == 3 && m_mc_pt->at(i)> 15.0) {   // for Sherpa
+   double eta = fabs(m_mc_eta->at(i));
+	    if(eta< 2.37){
+	    		if(!fid || (eta> 1.52 || eta<1.37)){
+	    TLorentzVector tmp;
+	    tmp.SetPtEtaPhiM(m_mc_pt->at(i),m_mc_eta->at(i),m_mc_phi->at(i),m_mc_m->at(i));
+	 SelectedPhs.push_back(tmp); 
+	    		}
+	  }
+	}
+      }
+    }
+  return goodphotoncount;
+}
+
+int ZmmgammaEventSelection::TruthMuons(std::vector<TLorentzVector> SelectedMus, bool fid){
+  int goodmuoncount = 0;
+    for(int i = 0; i< m_mc_n; i++){
+    if (abs(m_mc_pdgId->at(i)) == 13) {
+   if (m_mc_status->at(i) == 3 && m_mc_pt->at(i)> 25) {   // for Sherpa
+   double eta = fabs(m_mc_eta->at(i));
+	    if(eta< 2.5){
+	    TLorentzVector tmp;
+	    tmp.SetPtEtaPhiM(m_mc_pt->at(i),m_mc_eta->at(i),m_mc_phi->at(i),m_mc_m->at(i));
+	 SelectedMus.push_back(tmp); 
+	  }
+	}
+      }
+    }
+  return goodmuoncount;
+
+}
+
+void ZmmgammaEventSelection::TruthEvent(bool fid, std::vector<int> &Ecounter) throw ( SError ){
+int counter = 0;
+	if(fid) counter = 6;
+std::vector<TLorentzVector> SelectedMus1;
+std::vector<TLorentzVector> SelectedPhs1;
+
+
+int numphotons = TruthPhotons(SelectedPhs1, fid);
+int nummuons = TruthMuons(SelectedMus1, fid);
+
+int numtruephotons = 0;
+
+AnalysisUtils::SortParticlesPt(SelectedMus1);
+AnalysisUtils::SortParticlesPt(SelectedPhs1);
+
+  Ecounter.at(counter)+= nummuons;
+  counter++;
+for(int i = 0; i < numphotons; i++){
+if(nummuons>1){
+float dr1 = SelectedMus1[0].DeltaR(SelectedPhs1[i]);
+float dr2 = SelectedMus1[1].DeltaR(SelectedPhs1[i]);
+if(dr1 > m_dRLeptonGammaCut || dr2 > m_dRLeptonGammaCut){
+numtruephotons++;
+}
+}
+}
+  Ecounter.at(counter)+= numtruephotons;
+  counter++;
+TLorentzVector mumu;
+if(nummuons < 2) throw SError( SError::SkipEvent );
+mumu = SelectedMus1[0] + SelectedMus1[1];
+if(mumu.M() > 40 ) throw SError( SError::SkipEvent );
+if(numtruephotons < 1) throw SError( SError::SkipEvent );
+Ecounter.at(counter) ++;
+counter++;
+if(numtruephotons < 2) throw SError( SError::SkipEvent );
+Ecounter.at(counter) ++;
+counter++;
+float dr = SelectedPhs1[0].DeltaR(SelectedPhs1[1]);
+if(dr < .4) throw SError( SError::SkipEvent );
+Ecounter.at(counter) ++;
+counter++;
+TLorentzVector Zgg;
+Zgg = SelectedPhs1[0] + SelectedPhs1[1] + mumu;
+if(Zgg.M()< 65000) throw SError( SError::SkipEvent );
+Ecounter.at(counter) ++;
+
+}
+
+void ZmmgammaEventSelection::ExecuteEvent( const SInputData &inputData, Double_t xsection_weight ) throw( SError ) {
+  icutflow=0;
+  //macro of commands to clear the output tree vectors. (delete if you don't want an output tree)
+  //RESETVAR
+ //   ;  
+RESETVAR; 
+  RESETVAR_WG
+      ; 
+  // Start making cuts here.  When a cut is failed, throw a SkipEvent error.
+  m_logger << VERBOSE << "/** event passed all-events cut    **/" << SLogger::endmsg;
+  bool quick = true;
+  if(quick){
+  int goodph = 0;
+  for(int i =0;i<phr.m_NumPhotons;i++)
+     {
+    if(phr.m_PhotonClusterPt->at(i)>10000&&fabs(phr.m_PhotonEtaS2->at(i))<2.5) goodph++;
+     }
+  if(goodph<2) throw SError(SError::SkipEvent);
+  if(mur.m_NumMuons < 2) throw SError(SError::SkipEvent);
+  }
+  bool isdata = true;
+  if(inputData.GetType()!="data") isdata=false;
+  bool isMC = !isdata;
+  IncrementCutFlow();//total  number of events
+  //---------------------------------------------------------//
+  // Counting both tight muons//
+  //---------------------------------------------------------//
+  int TightMuonCount = 0;
+  std::vector<int> TightMuonIndex;
+  std::vector<TLorentzVector> SelectedMus;
+  int npv = 0;
+  for(int i = 0;i<m_vxp_n;i++)
+  {
+  if(mur.v_NumTracks->at(i) >=2 ) npv++;
+  }
+  m_logger << VERBOSE << "/** Start looping **/" << SLogger::endmsg;
+  mur.SetNPV(npv);
+  mur.SetEventNumber(m_EventNumber);
+  phr.SetNPV(npv);
+  phr.SetEventNumber(m_EventNumber);
+  er.SetNPV(npv);
+  er.SetEventNumber(m_EventNumber);
+
+  for (int i = 0; i<mur.m_NumMuons;i++)
+  {
+  m_logger << VERBOSE << "/** Start selection **/" << SLogger::endmsg;
+  bool TightMuon = mur.IsGoodMuon_2012(i,m_LeptonPt,mur.GetMuonPt(i, mcp_smear),Mcounter);
+  m_logger << VERBOSE << "/** Tight Muon selected **/" << SLogger::endmsg;
+if(TightMuon) {
+  TLorentzVector tmp;  
+mur.FillMuonFourMomentum(i,mur.GetMuonPt(i, mcp_smear),tmp);
+  SelectedMus.push_back(tmp);
+  TightMuonCount++;
+  TightMuonIndex.push_back(i);
+}
+
+  }
+  if(quick && TightMuonCount < 2) throw SError(SError::SkipEvent);
+  //    m_logger << WARNING << "1" << SLogger::endmsg;
+
+  int LeadingMuonIndex;
+  int SLeadingMuonIndex;
+
+
+  TallyMuons(TightMuonCount, SelectedMus, TightMuonIndex, muv1, muv2, LeadingMuonIndex, SLeadingMuonIndex);
+
+// Electron Selection (for dR cut) My electron selection started breaking...
+  bool els = false;
+
+  int TightElectronCount = 0;
+  std::vector<int> TightElectronIndex;
+  std::vector<TLorentzVector> SelectedEls;
+
+  if(els){
+	  TightElectronCount = ElSelection(TightMuonCount, muv1,muv2, SelectedEls,TightElectronIndex);
+  }
+
+//    m_logger << WARNING << "1" << SLogger::endmsg;
+  //Photon selection
+  int GoodPhotonCount = 0;
+  std::vector<int> GoodPhotonIndex;
+  std::vector<TLorentzVector> SelectedPhs;
+vector<pair<TLorentzVector,int> > vecphotons;  
+
+for(int i = 0;i < phr.m_NumPhotons;i++)
+  {
+if(phr.IsGoodPhotonJack(i,m_PhotonPt,Phcounter, m_Rescaler)){
+TLorentzVector tmp;
+  phr.PhotonFourVectorJack(i,tmp, m_Rescaler);
+// Here is the start of the loop that validates the cutflow of the photons
+// Its long and convoluted, but essentially checks all of the 9 cases for mu/ph and el/ph DR
+
+int count = DrPassed(quick, i, TightMuonCount, TightElectronCount,SelectedMus,SelectedEls, tmp, GoodPhotonIndex,SelectedPhs,vecphotons);
+if(count> 0) phr.DRJack(Phcounter);
+GoodPhotonCount += count;
+}
+}
+
+if(quick && GoodPhotonCount < 1) throw SError(SError::SkipEvent);
+
+if( !( m_prop_skipgrl ) && (( inputData.GetType() == "data" ) || ( inputData.GetType() == "Data" ))) {
+      if ( ! testGRL(m_RunNumber,m_lbn) )  throw SError( SError::SkipEvent );
+  }
+/*  //writexml(); 
+  bool reject = false;
+  if(m_isZjets) reject = OverlapRemovalFSR(isMC) ;   
+  //std::cout<<"reject"<<reject<<std::endl;
+  if(reject) throw SError (SError::SkipEvent);
+*/
+  IncrementCutFlow();//GRL
+  m_logger << VERBOSE << "/** event passed goodrun cut   **/" << SLogger::endmsg;
+  //---------------------------------------------------------//
+  //------------------primary vertex cut---------------------//
+  //---------------------------------------------------------//
+
+   if (m_vxp_n<1 || mur.v_NumTracks->at(0)< 4) throw SError(SError::SkipEvent); 
+  IncrementCutFlow();
+  m_logger << VERBOSE << "/** event passed npv cut   **/" << SLogger::endmsg;
+  //---------------------------------------------------------//
+  //------------------------trigger--------------------------//
+  //---------------------------------------------------------//
+//int randomRunNumber = m_pileupTool->GetRandomRunNumber(m_RunNumber);
+  if(m_Trigger&& !m_LeptonTrigger1 && !m_LeptonTrigger2 && !m_LeptonTrigger3 && !m_LeptonTrigger4)throw SError( SError::SkipEvent );
+//m_logger << WARNING << "3" << SLogger::endmsg;
+//m_logger << WARNING << "4" << SLogger::endmsg;
+  m_logger << VERBOSE << "/** event passed trigger cut   **/" << SLogger::endmsg;
+  IncrementCutFlow();
+  //---------------------------------------------------------//
+  //---------------------LArHole veto------------------------//
+  //---------------------------------------------------------//
+/*
+  bool m_LArHoleVeto = false;
+  if(m_LArHoleVeto){
+  bool LArHoleEvent = false;
+  if ((!isdata && (m_RunNumber == 183003)) || (isdata && (m_RunNumber >=180614) && (m_RunNumber <185352)))
+  for (int i = 0; i<jr.m_NumJets; i++)
+  if (LArHole::simpleVeto(jr.m_JetPt->at(i), jr.m_JetEta->at(i), jr.m_JetPhi->at(i),
+  jr.m_JetBCH_CORR_JET->at(i), jr.m_JetBCH_CORR_CELL->at(i), 25000.))
+  {LArHoleEvent = true; break; }
+  if(LArHoleEvent) throw SError(SError::SkipEvent);
+  }
+*/
+if(isdata){
+if(m_larError==2) throw SError(SError::SkipEvent);
+if(m_tileError==2)throw SError(SError::SkipEvent);
+if(m_coreFlags&0x40000!=0)throw SError(SError::SkipEvent);
+}
+  IncrementCutFlow();
+  m_logger << VERBOSE << "/** event passed LAr cleaning   **/" << SLogger::endmsg;
+
+//Cut on Num Photons
+
+if(GoodPhotonCount < 1) throw SError(SError::SkipEvent);
+  m_logger << VERBOSE << "/** found at least one good photon**/" << SLogger::endmsg;
+  IncrementCutFlow();
+  TLorentzVector ph_lv;
+  int The_ph;
+ int leadingPtPhoton1 = AnalysisUtils::LeadingPtParticle(SelectedPhs);
+//  AnalysisUtils::SortParticlesPt(GoodPhotonIndex,SelectedPhs);
+    phr.PhotonFourVectorJack(The_ph,ph_lv, m_Rescaler);
+ Book(TH1F("LeadPassingPhoton_Pt","Pt of Lead Photons passing",100,-5000,100000))->Fill(ph_lv.Pt());
+  //---------------------------------------------------------//
+  // muon selection, at least two good muons with pt>20GeV//
+  //---------------------------------------------------------//
+  m_logger << VERBOSE << "/** event passed 2 Good Muon cut   **/" << SLogger::endmsg;
+
+ //---------------------------------------------------------//
+  //charge
+  //---------------------------------------------------------//
+  if(TightMuonCount <2)throw SError(SError::SkipEvent);
+if( mur.m_MuonCharge->at(LeadingMuonIndex)==mur.m_MuonCharge->at(SLeadingMuonIndex)) throw SError(SError::SkipEvent);
+  m_logger << VERBOSE << "/** event passed two opposite signed electrons cut   **/" << SLogger::endmsg;
+  TLorentzVector Zboson = muv1+muv2;
+  float Zmass = Zboson.M();  
+ Book(TH1F("pt_l1","pt_l1",150,5000,100000))->Fill(muv1.Pt());
+ Book(TH1F("pt_l2","pt_l2",150,5000,100000))->Fill(muv2.Pt());
+ Book(TH1F("eta_l1","eta_l1",150,-3.5,3.5))->Fill(muv1.Eta());
+ Book(TH1F("eta_l2","eta_l2",150,-3.5,3.5))->Fill(muv2.Eta());
+ Book(TH1F("phi_l1","phi_l1",150,-3.5,3.5))->Fill(muv1.Phi());
+ Book(TH1F("phi_l2","phi_l2",150,-3.5,3.5))->Fill(muv2.Phi());
+ Book(TH1F("Mu_l1","Mu_l1",150,5000,100000))->Fill(muv1.E());
+ Book(TH1F("Mu_l2","Mu_l2",150,5000,100000))->Fill(muv2.E());
+ Book(TH1F("Zmass_before","Z mass in all events",150,-5000,200000))->Fill(Zmass);
+if(Zmass<m_ZmassCut1) throw SError(SError::SkipEvent);
+ // if(Zmass<40000) throw SError(SError::SkipEvent);
+ Book(TH1F("Zmass","Z mass in events",150,-5000,200000))->Fill(Zmass);
+  m_logger << VERBOSE << "/** event passed Z mass cut   **/" << SLogger::endmsg;
+   IncrementCutFlow(); 
+
+
+  if(m_LeptonCut&&TightMuonCount > 2) throw SError(SError::SkipEvent);
+   IncrementCutFlow();
+ // find leading pt photon 
+
+  //check if leading pt photon is isolated
+ float Zgamma_mass = (muv1+muv2+ph_lv).M() ;
+ Book(TH1F("Zgamma_mass","Zgamma mass in events",150,-5000,200000))->Fill(Zgamma_mass);
+ Book(TH1F("LeadPhotonPt_Z","Pt of Lead Photons when Z selected",100,-5000,100000))->Fill(ph_lv.Pt());
+bool twophotons = false;
+//m_logger << WARNING << "4" << SLogger::endmsg;
+if(GoodPhotonCount <2)throw SError(SError::SkipEvent);
+
+
+int maxindex = 0;
+for(unsigned int  k = 0; k < vecphotons.size(); k++){
+TLorentzVector tl1 = vecphotons[k].first;
+TLorentzVector tl2 = vecphotons[maxindex].first;
+if(tl1.Pt()>=tl2.Pt()){
+maxindex = k;
+}
+}
+int secondindex = -1;
+for(unsigned int  k = 0; k < vecphotons.size(); k++){
+if(k!= maxindex){
+if(secondindex == -1) secondindex = k;
+TLorentzVector tl1 = vecphotons[k].first;
+TLorentzVector tl2 = vecphotons[secondindex].first;
+if(tl1.Pt()>=tl2.Pt()){
+secondindex = k;
+}
+}
+}
+  float dr1 = vecphotons[maxindex].first.DeltaR(vecphotons[secondindex].first);
+  if(dr1 <= m_dRGammaGammaCut) if(!twophotons)throw SError(SError::SkipEvent);
+   IncrementCutFlow();
+
+  IncrementCutFlow();
+
+if(!phr.IsTightPhotonJack(vecphotons[maxindex].second, m_Rescaler)) throw SError(SError::SkipEvent);
+  IncrementCutFlow();
+
+  m_logger << VERBOSE << "/** photon is tight   **/" << SLogger::endmsg;
+if(!phr.IsTightPhotonJack(vecphotons[secondindex].second, m_Rescaler)) throw SError(SError::SkipEvent);
+  IncrementCutFlow();
+  m_logger << VERBOSE << "/** photon is tight   **/" << SLogger::endmsg;
+
+ float correctedIso = phr.CorrectedIsoJack(vecphotons[maxindex].second,1,40,m_Rescaler);
+
+if(correctedIso > m_PhotonIsoValue) throw SError(SError::SkipEvent);
+
+  m_logger << VERBOSE << "/** photon is isolated   **/" << SLogger::endmsg;
+  IncrementCutFlow();
+
+correctedIso = phr.CorrectedIsoJack(vecphotons[secondindex].second,1,40, m_Rescaler);
+
+
+if(correctedIso > m_PhotonIsoValue) throw SError(SError::SkipEvent);
+
+  m_logger << VERBOSE << "/** photon is isolated   **/" << SLogger::endmsg;
+  IncrementCutFlow();
+//  COPYVAR
+//    ;  
+ Book(TH1F("LeadPhoton_Pt_Zgg","Pt of Lead Photons passing",100,-5000,100000))->Fill(vecphotons[maxindex].first.Pt());
+ Book(TH1F("SecondPhoton_Pt_Zgg","Pt of Second Photons passing",100,-5000,100000))->Fill(vecphotons[secondindex].first.Pt());
+ Book(TH1F("All_Photon_Pt_Zgg","Pt of Lead Photons passing",100,-5000,100000))->Fill(vecphotons[maxindex].first.Pt());
+ Book(TH1F("All_Photon_Pt_Zgg","Pt of Lead Photons passing",100,-5000,100000))->Fill(vecphotons[secondindex].first.Pt());
+bool isData = !isMC;
+
+ for(int i=0;i<SelectedMus.size();i++)
+{ 
+  m_logger << VERBOSE << "/** save muons   **/" << SLogger::endmsg;
+ o_m_TightLeptons_E.push_back(SelectedMus.at(i).E());
+ o_m_TightLeptons_Pt.push_back(SelectedMus.at(i).Pt());
+ o_m_TightLeptons_Eta.push_back(SelectedMus.at(i).Eta());
+ o_m_TightLeptons_Phi.push_back(SelectedMus.at(i).Phi());
+/*float corrected_isolation;
+corrected_isolation=er.GetMuonIso(TightMuonIndex.at(i),0,20);
+o_m_TightLeptonsEtConeIso20.push_back(corrected_isolation);
+corrected_isolation=er.GetMuonIso(TightMuonIndex.at(i),0,30);
+o_m_TightLeptonsEtConeIso30.push_back(corrected_isolation);
+corrected_isolation=er.GetMuonIso(TightMuonIndex.at(i),0,40);
+o_m_TightLeptonsEtConeIso40.push_back(corrected_isolation);
+corrected_isolation=er.GetMuonIso(TightMuonIndex.at(i),1,20);
+o_m_TightLeptonsTopoIso20.push_back(corrected_isolation);
+corrected_isolation=er.GetMuonIso(TightMuonIndex.at(i),1,30);
+o_m_TightLeptonsTopoIso30.push_back(corrected_isolation);
+corrected_isolation=er.GetMuonIso(TightMuonIndex.at(i),1,40);
+o_m_TightLeptonsTopoIso40.push_back(corrected_isolation);
+o_m_TightLeptonsPtConeIso20.push_back(er.m_MuonPtcone20->at(TightMuonIndex.at(i)));
+o_m_TightLeptonsPtConeIso30.push_back(er.m_MuonPtcone30->at(TightMuonIndex.at(i)));
+o_m_TightLeptonsPtConeIso40.push_back(er.m_MuonPtcone40->at(TightMuonIndex.at(i)));
+float lepsf = 1;
+std::pair<float,float> sf_error;
+sf_error = er.GetScaleFactor(TightMuonIndex.at(i),39,m_RunNumber); 
+lepsf = sf_error.first;
+
+o_m_TightLeptonsScale.push_back(lepsf);
+*/} 
+
+ for(int i=0;i<SelectedPhs.size();i++)
+{
+ m_logger << VERBOSE << "/** save photons   **/" << SLogger::endmsg;
+ o_m_GoodPhotons_E.push_back(SelectedPhs.at(i).E());
+ o_m_GoodPhotons_Pt.push_back(SelectedPhs.at(i).Pt());
+ o_m_GoodPhotons_Eta.push_back(SelectedPhs.at(i).Eta());
+ o_m_GoodPhotons_Phi.push_back(SelectedPhs.at(i).Phi());
+ int phindex=GoodPhotonIndex.at(i);
+//d
+
+ float correctedIso;
+ correctedIso=phr.CorrectedIsoJack(phindex,0,20, m_Rescaler); 
+ o_m_GoodPhotonEtConeIso20.push_back(correctedIso); 
+ correctedIso=phr.CorrectedIsoJack(phindex,0,30,m_Rescaler); 
+ o_m_GoodPhotonEtConeIso30.push_back(correctedIso); 
+ correctedIso=phr.CorrectedIsoJack(phindex,0,40,m_Rescaler); 
+ o_m_GoodPhotonEtConeIso40.push_back(correctedIso); 
+ correctedIso=phr.CorrectedIsoJack(phindex,1,20,m_Rescaler); 
+ o_m_GoodPhotonTopoIso20.push_back(correctedIso); 
+ //correctedIso=phr.CorrectedIso(isMC,phindex,m_EventNumber,1,30); 
+ //o_m_GoodPhotonTopoIso30.push_back(correctedIso); 
+ correctedIso=phr.CorrectedIsoJack(phindex,1,40,m_Rescaler); 
+ o_m_GoodPhotonTopoIso40.push_back(correctedIso); 
+//save track isolation 
+o_m_GoodPhotonPtConeIso20.push_back(phr.m_PhotonPtCone20->at(GoodPhotonIndex.at(i)));
+o_m_GoodPhotonPtConeIso30.push_back(phr.m_PhotonPtCone30->at(GoodPhotonIndex.at(i)));
+o_m_GoodPhotonPtConeIso40.push_back(phr.m_PhotonPtCone40->at(GoodPhotonIndex.at(i)));
+ m_logger << VERBOSE << "/** save photons track isolation  **/" << SLogger::endmsg;
+ std::vector<double> showershapes=phr.PhotonShowerShapesJack(GoodPhotonIndex.at(i),m_Rescaler);
+ std::vector<int> conversions;
+ conversions.push_back(phr.m_PhotonIsConv->at(GoodPhotonIndex.at(i)));
+ conversions.push_back(m_ph_nSingleTrackConv->at(GoodPhotonIndex.at(i)));
+ conversions.push_back(m_ph_nDoubleTrackConv->at(GoodPhotonIndex.at(i)));
+ o_m_GoodPhotons_conversion.push_back( conversions); 
+ o_m_GoodPhotons_showershape.push_back(showershapes);
+} 
+//  o_m_METx=MET_x;
+//  o_m_METy=MET_y;
+  o_m_Mll = Zmass;
+  o_m_Mllg = Zgamma_mass;
+// m_logger << VERBOSE << "/** save MET   **/" << SLogger::endmsg;
+ o_m_weights.push_back(xsection_weight); 
+ float combinedweight = 1;
+ if(isMC){ combinedweight = m_pileupTool->GetCombinedWeight(m_RunNumber,m_mc_channel_number,m_averageIntPerXing); 
+o_m_weights.push_back(combinedweight);
+}
+ COPYVAR_WG
+    ;  
+ return;
+}
+
+void ZmmgammaEventSelection::EndMasterInputData( const SInputData& ) throw( SError ) {
+  m_logger << INFO << "End of input data." << SLogger::endmsg;
+ for(int i =0;i<14;i++){
+  h_Mcutflow->SetBinContent(i,(*Mcounter)[i]);
+ }   
+ for(int i = 0; i<9;i++)
+ {
+  h_Phcutflow->SetBinContent(i,(*Phcounter)[i]); 
+ }
+for(int i = 0; i<15; i ++){
+cout << "" << h_cutflow->GetBinContent(i) << endl;
+}
+
+cout << "" << endl;
+for(int i = 0; i<14; i ++){
+cout << "" << h_Mcutflow->GetBinContent(i) << endl;
+}
+cout << "" << endl;
+for(int i = 0; i<9; i ++){
+cout << "" << h_Phcutflow->GetBinContent(i) << endl;
+}
+
+cout << "" << DRcut <<endl;
+
+/*  if ( m_cutflow->size() ==11 ) {
+   m_logger << INFO << "(C0)  Number of input events:                       " << ( *m_cutflow )[ 0 ] <<"  Cut Efficiency: "<<( *m_cutflow )[ 0 ]/( *m_cutflow )[ 0 ]<<SLogger::endmsg;
+    m_logger << INFO << "(C1)  Number of events passing goodrun flag:        " << ( *m_cutflow )[ 1 ] <<"  Cut Efficiency: "<<( *m_cutflow )[ 1 ]/( *m_cutflow )[ 0 ]<<SLogger::endmsg;
+    m_logger << INFO << "(C2)  Number of events passing primary vertex:      " << ( *m_cutflow )[ 2 ] <<"  Cut Efficiency: "<<( *m_cutflow )[ 2 ]/( *m_cutflow )[ 1 ]<< SLogger::endmsg;
+    m_logger << INFO << "(C3)  Number of events passing trigger              " << ( *m_cutflow )[ 3 ] <<"  Cut Efficiency: "<<( *m_cutflow )[ 3 ]/( *m_cutflow )[ 2 ]<< SLogger::endmsg;
+    m_logger << INFO << "(C4)  Number of events passing LArHole veto         " << ( *m_cutflow )[ 4 ] <<"  Cut Efficiency: "<<( *m_cutflow )[ 4 ]/( *m_cutflow )[ 3 ]<< SLogger::endmsg;
+    m_logger << INFO << "(C5)  Number of events passing lepton selection:    " << ( *m_cutflow )[ 5 ] <<"  Cut Efficiency: "<<( *m_cutflow )[ 5 ]/( *m_cutflow )[ 4 ]<< SLogger::endmsg;
+    m_logger << INFO << "(C6)  Number of events passing opposite sign el:    " << ( *m_cutflow )[ 6 ] <<"  Cut Efficiency: "<<( *m_cutflow )[ 6 ]/( *m_cutflow )[ 5 ]<< SLogger::endmsg;
+    m_logger << INFO << "(C7)  Number of events passing Z mass cut:          " << ( *m_cutflow )[ 7 ] <<"  Cut Efficiency: "<<( *m_cutflow )[ 7 ]/( *m_cutflow )[ 6 ]<< SLogger::endmsg;
+    m_logger << INFO << "(C8)  Number of events passing photon ID cut:       " << ( *m_cutflow )[ 8 ] <<"  Cut Efficiency: "<<( *m_cutflow )[ 8 ]/( *m_cutflow )[ 7 ]<< SLogger::endmsg;
+    m_logger << INFO << "(C9)  Number of events passing photon isolation cut:" << ( *m_cutflow )[ 9 ] <<"  Cut Efficiency: "<<( *m_cutflow )[ 9 ]/( *m_cutflow )[ 8 ]<< SLogger::endmsg;
+  } else {
+    m_logger << WARNING << "It looks like your job didn't run." << SLogger::endmsg;
+  }
+*/  
+ return;
+}

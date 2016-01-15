@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE JobConfiguration PUBLIC "" "JobConfig.dtd"[
+  <!ENTITY input2012ATOE4 SYSTEM "input_wgg_2012A_E4.xml"> 
+]>
+
+<JobConfiguration JobName="ExampleJob" OutputLevel="INFO">
+  <Library Name="libSFramePlugIns" />
+  <Library Name="libCintex" />
+  <Library Name="libSFrameCintex" />
+  <Library Name="libGoodRunsLists" />
+  <Library Name="libPileupReweighting" />
+  <Library Name="libReweightUtils" />
+  <Library Name="libMuonEfficiencyCorrections" />
+  <Library Name="libMuonMomentumCorrections" />
+  <Library Name="libegammaAnalysisUtils" />
+  <Library Name="libegammaEvent" />
+  <Library Name="libTrigMuonEfficiency" />
+  <Library Name="libMuonIsolationCorrection" />
+  <Library Name="libApplyJetCalibration" />
+  <Library Name="libMissingETUtility" />
+  <Library Name="libDukHep" />
+  <Library Name="libWgZg2012Ana"/>
+  <Package Name="SFrameCore.par" />
+  <Package Name="SFramePlugIns.par" />
+  <Package Name="SFrameCintex.par" />
+  <Package Name="RootCore.par" />
+  <Package Name="DukHep.par" />
+  <Package Name="WgZg2012Ana.par" />
+    <Cycle Name="WggEventSelection" OutputDirectory="../SFrameOutputs/" PostFix="" TargetLumi="1.0" RunMode="PROOF" ProofServer="lite://" ProofNodes="8" ProofWorkDir="/afs/cern.ch/work/m/mliu/private/WgZgAnalysis/SFrameOutputs/" UseTreeCache="False">
+	<InputData Lumi="0.0" NEventsMax="-1" Type="MC" Version="WgNp0.gjet">
+          <In FileName="root://eosatlas.cern.ch//eos/atlas/user/m/mliu/Wgg/MC12/WgNp0.root" Lumi="4.37e+06" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<InputData Lumi="0.0" NEventsMax="-1" Type="MC" Version="WgNp10.gjet">
+          <In FileName="root://eosatlas.cern.ch//eos/atlas/user/m/mliu/Wgg/MC12/WgNp10.root" Lumi="4.37e+06" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<InputData Lumi="0.0" NEventsMax="-1" Type="MC" Version="WgNp11.gjet">
+          <In FileName="root://eosatlas.cern.ch//eos/atlas/user/m/mliu/Wgg/MC12/WgNp11.root" Lumi="4.37e+06" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<InputData Lumi="0.0" NEventsMax="-1" Type="MC" Version="WgNp2.gjet">
+          <In FileName="root://eosatlas.cern.ch//eos/atlas/user/m/mliu/Wgg/MC12/WgNp2.root" Lumi="4.37e+06" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<InputData Lumi="0.0" NEventsMax="-1" Type="MC" Version="WgNp3.gjet">
+          <In FileName="root://eosatlas.cern.ch//eos/atlas/user/m/mliu/Wgg/MC12/WgNp3.root" Lumi="4.37e+06" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+<!---	<InputData Lumi="0.0" NEventsMax="-1" Type="MC" Version="Wg5jet.gjet"> -->
+<!---          <In FileName="root://eosatlas.cern.ch//eos/atlas/user/m/mliu/Wgg/MC12/Wg5jet.root" Lumi="4.37e+06" /> -->
+<!---	  <InputTree Name="Wgg" /> -->
+ <!---  	  <OutputTree Name="WggCandidates" /> -->
+ <!---  	</InputData> -->
+	<UserConfig>
+	  <Item Name="GoodRunList" Value="GRL/data12_8TeV.periodAllYear_HEAD_CoolRunQuery-00-04-08_All_Good.xml" /> 
+	  <Item Name="IgnoreGRL" Value="false"/>
+	  <Item Name="BkgStudy" Value="gjet"/>
+	  <Item Name="FSRveto" Value="2"/>
+	  <!---<Item Name="TriggerName1" Value="EF_e24vhi_medium1"/>-->
+	  <Item Name="TriggerName1" Value="EF_3g15vh_loose"/> 
+	  <Item Name="TriggerName2" Value="EF_3g15vh_loose"/> 
+	  <Item Name="nPVCut" Value="true"/>
+	  <Item Name="Trigger" Value="true"/>
+	  <Item Name="LeptonPt" Value="20000"/>
+	  <Item Name="LeptonCut" Value="true"/>
+	  <Item Name="LeptonVeto" Value="true"/>
+	  <Item Name="MetCut" Value="25000"/>
+	  <Item Name="MtCut" Value="40000"/>
+	  <Item Name="PhotonPt" Value="20000"/>
+	  <Item Name="PhotonIDCut" Value="true"/>
+	  <Item Name="dRLeptonGammaCut" Value="0.7"/>
+	  <Item Name="PhotonIsolation" Value="ph_Etcone30_pt_corrected"/>
+	  <Item Name="PhotonIsoValue" Value="4000"/>
+	</UserConfig>
+    </Cycle>
+    <Cycle Name="WggEventSelection" OutputDirectory="../SFrameOutputs/" PostFix="" TargetLumi="1.0" RunMode="PROOF" ProofServer="lite://" ProofNodes="1" ProofWorkDir="/afs/cern.ch/work/m/mliu/private/WgZgAnalysis/SFrameOutputs/" UseTreeCache="False">
+        <InputData Lumi="0.0" NEventsMax="-1" Type="MC" Version="SherpaWenugg.gjet">
+          <In FileName="root://eosatlas.cern.ch//eos/atlas/user/m/mliu/Wgg/MC12/SherpaWenugg.root" Lumi="4.37e+06" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<InputData Lumi="0.0" NEventsMax="-1"  Type="MC" Version="AlpgenWenuggNp0.gjet">
+          <In FileName="root://eosatlas.cern.ch//eos/atlas/user/m/mliu/Wgg/MC12/AlpgenWenuggNp0.root" Lumi="4.37e+06" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<InputData Lumi="0.0" NEventsMax="-1"  Type="MC" Version="AlpgenWenuggNp1.gjet">
+          <In FileName="root://eosatlas.cern.ch//eos/atlas/user/m/mliu/Wgg/MC12/AlpgenWenuggNp1.root" Lumi="4.37e+06" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<InputData Lumi="0.0" NEventsMax="-1"  Type="MC" Version="AlpgenWenuggNp2.gjet">
+          <In FileName="root://eosatlas.cern.ch//eos/atlas/user/m/mliu/Wgg/MC12/AlpgenWenuggNp2.root" Lumi="4.37e+06" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<InputData Lumi="0.0" NEventsMax="-1"  Type="MC" Version="Zeeg01.gjet">
+          <In FileName="root://eosatlas.cern.ch//eos/atlas/user/m/mliu/Wgg/MC12/Zeeg01.root" Lumi="4.37e+06" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<InputData Lumi="0.0" NEventsMax="-1"  Type="MC" Version="Zeeg02.gjet">
+          <In FileName="root://eosatlas.cern.ch//eos/atlas/user/m/mliu/Wgg/MC12/Zeeg02.root" Lumi="4.37e+06" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<InputData Lumi="0.0" NEventsMax="-1"  Type="MC" Version="Zeeg03.gjet">
+          <In FileName="root://eosatlas.cern.ch//eos/atlas/user/m/mliu/Wgg/MC12/Zeeg03.root" Lumi="4.37e+06" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<UserConfig>
+	  <Item Name="GoodRunList" Value="GRL/data12_8TeV.periodAllYear_HEAD_CoolRunQuery-00-04-08_All_Good.xml" /> 
+	  <Item Name="IgnoreGRL" Value="false"/>
+	  <Item Name="BkgStudy" Value="gjet"/>
+	  <Item Name="FSRveto" Value="0"/>
+	  <!---<Item Name="TriggerName1" Value="EF_e24vhi_medium1"/>-->
+	  <Item Name="TriggerName1" Value="EF_3g15vh_loose"/> 
+	  <Item Name="TriggerName2" Value="EF_3g15vh_loose"/> 
+	  <Item Name="nPVCut" Value="true"/>
+	  <Item Name="Trigger" Value="true"/>
+	  <Item Name="LeptonPt" Value="20000"/>
+	  <Item Name="LeptonCut" Value="true"/>
+	  <Item Name="LeptonVeto" Value="true"/>
+	  <Item Name="MetCut" Value="25000"/>
+	  <Item Name="MtCut" Value="40000"/>
+	  <Item Name="PhotonPt" Value="20000"/>
+	  <Item Name="PhotonIDCut" Value="true"/>
+	  <Item Name="dRLeptonGammaCut" Value="0.7"/>
+	  <Item Name="PhotonIsolation" Value="ph_Etcone30_pt_corrected"/>
+	  <Item Name="PhotonIsoValue" Value="3000"/>
+	</UserConfig>
+    </Cycle>
+</JobConfiguration>

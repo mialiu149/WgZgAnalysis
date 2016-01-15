@@ -1,0 +1,40 @@
+<InputData Lumi="" NEventsMax="-1" Type="MC" Version="185683.VeryTight">
+  <In FileName="root://eosatlas.cern.ch//eos/atlas/user/m/mliu/Wg/AnalysisNtuple/MC12/185683.root" Lumi="1.23e+06" />
+  <InputTree Name="WgCandidates" />
+  <OutputTree Name="CollectionTree" />
+</InputData>
+<InputData Lumi="" NEventsMax="-1" Type="MC" Version="185684.VeryTight">
+  <In FileName="root://eosatlas.cern.ch//eos/atlas/user/m/mliu/Wg/AnalysisNtuple/MC12/185684.root" Lumi="1.23e+06" />
+  <InputTree Name="WgCandidates" />
+  <OutputTree Name="CollectionTree" />
+</InputData>
+<InputData Lumi="" NEventsMax="-1" Type="MC" Version="185685.VeryTight">
+  <In FileName="root://eosatlas.cern.ch//eos/atlas/user/m/mliu/Wg/AnalysisNtuple/MC12/185685.root" Lumi="6.56e+06" />
+  <InputTree Name="WgCandidates" />
+  <OutputTree Name="CollectionTree" />
+</InputData>
+<InputData Lumi="" NEventsMax="-1" Type="MC" Version="185686.VeryTight">
+  <In FileName="root://eosatlas.cern.ch//eos/atlas/user/m/mliu/Wg/AnalysisNtuple/MC12/185686.root" Lumi="4.53e+06" />
+  <InputTree Name="WgCandidates" />
+  <OutputTree Name="CollectionTree" />
+</InputData>
+<InputData Lumi="" NEventsMax="-1" Type="MC" Version="185688.VeryTight">
+  <In FileName="root://eosatlas.cern.ch//eos/atlas/user/m/mliu/Wg/AnalysisNtuple/MC12/185688.root" Lumi="2.27e+06" />
+  <InputTree Name="WgCandidates" />
+  <OutputTree Name="CollectionTree" />
+</InputData>
+<InputData Lumi="" NEventsMax="-1" Type="MC" Version="129170.VeryTight">
+  <In FileName="root://eosatlas.cern.ch//eos/atlas/user/m/mliu/Wg/AnalysisNtuple/MC12/129170.root" Lumi="1.03e+04" />
+  <InputTree Name="WgCandidates" />
+  <OutputTree Name="CollectionTree" />
+</InputData>
+<InputData Lumi="" NEventsMax="-1" Type="MC" Version="129927.alljets">
+  <In FileName="root://eosatlas.cern.ch//eos/atlas/user/m/mliu/Wg/AnalysisNtuple/MC12/129927.root" Lumi="4.15e+03" />
+  <InputTree Name="WgCandidates" />
+  <OutputTree Name="CollectionTree" />
+</InputData>
+<InputData Lumi="" NEventsMax="-1" Type="MC" Version="129929.alljets">
+  <In FileName="root://eosatlas.cern.ch//eos/atlas/user/m/mliu/Wg/AnalysisNtuple/MC12/129929.root" Lumi="421" />
+  <InputTree Name="WgCandidates" />
+  <OutputTree Name="CollectionTree" />
+</InputData>

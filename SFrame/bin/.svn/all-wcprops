@@ -1,0 +1,65 @@
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svnroot/sframe/!svn/ver/344/SFrame/trunk/bin
+END
+sframe_clear_server.py
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svnroot/sframe/!svn/ver/344/SFrame/trunk/bin/sframe_clear_server.py
+END
+sframe_dset_ls.py
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svnroot/sframe/!svn/ver/344/SFrame/trunk/bin/sframe_dset_ls.py
+END
+sframe_dset_rm.py
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svnroot/sframe/!svn/ver/344/SFrame/trunk/bin/sframe_dset_rm.py
+END
+sframe_dset_maker.py
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svnroot/sframe/!svn/ver/344/SFrame/trunk/bin/sframe_dset_maker.py
+END
+sframe_input.py
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svnroot/sframe/!svn/ver/344/SFrame/trunk/bin/sframe_input.py
+END
+sframe_print_config.py
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svnroot/sframe/!svn/ver/331/SFrame/trunk/bin/sframe_print_config.py
+END
+sframe_create_cycle.py
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svnroot/sframe/!svn/ver/344/SFrame/trunk/bin/sframe_create_cycle.py
+END
+sframe_parMaker.py
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svnroot/sframe/!svn/ver/344/SFrame/trunk/bin/sframe_parMaker.py
+END
+sframe_new_package.sh
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svnroot/sframe/!svn/ver/344/SFrame/trunk/bin/sframe_new_package.sh
+END
+sframe_reset_proof.py
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svnroot/sframe/!svn/ver/344/SFrame/trunk/bin/sframe_reset_proof.py
+END

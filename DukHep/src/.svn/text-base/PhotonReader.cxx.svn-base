@@ -1,0 +1,253 @@
+///bin/dukhep_create_reader.py -n PhotonReader EleMacros.dat MediumPlusPlus.dat
+#include "include/PhotonReader.h"
+#include "include/DukHepFilter.h"
+#include <iostream>
+
+PhotonReader::PhotonReader(SCycleBaseNTuple * ownr): owner(ownr),m_idSF(0),
+m_NumPhotons(0),
+m_PhotonIsoCone20(0),
+m_PhotonIsoCone30(0),
+m_PhotonIsoCone40(0),
+m_PhotonPtCone20(0),
+m_PhotonPtCone30(0),
+m_PhotonPtCone40(0),
+m_PhotonTopoCone20(0),
+m_PhotonTopoCone30(0),
+m_PhotonTopoCone40(0),
+m_PhotonED_median(0),
+m_PhotonIsoCone40_ED_corrected(0),
+m_PhotonAuthor(0),
+m_PhotonMedium(0),
+m_PhotonIsConv(0),
+m_PhotonOQ(0),
+m_PhotonClusterE(0),
+m_PhotonE(0),
+m_PhotonRconv(0),
+m_PhotonClusterEta(0),
+m_PhotonClusterPhi(0),
+m_PhotonClusterPt(0),
+m_PhotonCharge(0),
+m_PhotonEFDistance(0),
+m_PhotonEFIndex(0),
+m_EFPhotonPassed(0),
+m_PhotonEtHad(0),
+m_PhotonEtHadOne(0),
+m_PhotonF1(0),
+m_Photonfside(0),
+m_Photonws3(0),
+m_PhotonEminS1(0),
+m_PhotonEmaxS1(0),
+m_PhotonEmax2(0),
+m_PhotonE233(0),
+m_PhotonE237(0),
+m_PhotonE277(0),
+m_PhotonWSTot(0),
+m_PhotonWEta2(0),
+m_PhotonDeltaEta1(0),
+m_PhotonREta(0),
+m_PhotonRPhi(0),
+m_PhotonEtaS2(0),
+m_PhotonPointing(0),
+m_PhotonTopoEtCone60(0),
+m_PhotonLoose(0),
+m_PhotonTight(0)
+{}
+void PhotonReader::ConnectVariables(std::string treename){
+  owner->ConnectVariable( treename.c_str(), VarName("ph_n").c_str(), m_NumPhotons );
+  owner->ConnectVariable( treename.c_str(), VarName("ph_Etcone20").c_str(), m_PhotonIsoCone20 );
+  owner->ConnectVariable( treename.c_str(), VarName("ph_Etcone30").c_str(), m_PhotonIsoCone30 );
+  owner->ConnectVariable( treename.c_str(), VarName("ph_Etcone40").c_str(), m_PhotonIsoCone40 );
+  owner->ConnectVariable( treename.c_str(), VarName("ph_ptcone20").c_str(), m_PhotonPtCone20 );
+  owner->ConnectVariable( treename.c_str(), VarName("ph_ptcone30").c_str(), m_PhotonPtCone30 );
+  owner->ConnectVariable( treename.c_str(), VarName("ph_ptcone40").c_str(), m_PhotonPtCone40 );
+  owner->ConnectVariable( treename.c_str(), VarName("ph_topoEtcone20").c_str(), m_PhotonTopoCone20 );
+  owner->ConnectVariable( treename.c_str(), VarName("ph_topoEtcone30").c_str(), m_PhotonTopoCone30 );
+  owner->ConnectVariable( treename.c_str(), VarName("ph_topoEtcone40").c_str(), m_PhotonTopoCone40 );
+  owner->ConnectVariable( treename.c_str(), VarName("ph_ED_median").c_str(), m_PhotonED_median );
+  owner->ConnectVariable( treename.c_str(), VarName("ph_Etcone40_ED_corrected").c_str(), m_PhotonIsoCone40_ED_corrected );
+  owner->ConnectVariable( treename.c_str(), VarName("ph_author").c_str(), m_PhotonAuthor );
+//  owner->ConnectVariable( treename.c_str(), VarName("ph_medium").c_str(), m_PhotonMedium );
+  owner->ConnectVariable( treename.c_str(), VarName("ph_isConv").c_str(), m_PhotonIsConv );
+  owner->ConnectVariable( treename.c_str(), VarName("ph_OQ").c_str(), m_PhotonOQ );
+  owner->ConnectVariable( treename.c_str(), VarName("ph_cl_E").c_str(), m_PhotonClusterE );
+  owner->ConnectVariable( treename.c_str(), VarName("ph_E").c_str(), m_PhotonE );
+  owner->ConnectVariable( treename.c_str(), VarName("ph_Rconv").c_str(), m_PhotonRconv );
+  owner->ConnectVariable( treename.c_str(), VarName("ph_cl_eta").c_str(), m_PhotonClusterEta );
+  owner->ConnectVariable( treename.c_str(), VarName("ph_cl_phi").c_str(), m_PhotonClusterPhi );
+  owner->ConnectVariable( treename.c_str(), VarName("ph_cl_pt").c_str(), m_PhotonClusterPt );
+//  owner->ConnectVariable( treename.c_str(), VarName("ph_EF_index").c_str(), m_PhotonEFIndex );
+//  owner->ConnectVariable( treename.c_str(), VarName("trig_EF_ph_EF_e20_medium").c_str(), m_EFPhotonPassed );
+  //owner->ConnectVariable( treename.c_str(), VarName("ph_EF_dr").c_str(), m_PhotonEFDistance );
+  owner->ConnectVariable( treename.c_str(), VarName("ph_Ethad").c_str(), m_PhotonEtHad );
+  owner->ConnectVariable( treename.c_str(), VarName("ph_topoEtcone60").c_str(), m_PhotonTopoEtCone60 );
+  owner->ConnectVariable( treename.c_str(), VarName("ph_Ethad1").c_str(), m_PhotonEtHadOne );
+  owner->ConnectVariable( treename.c_str(), VarName("ph_f1").c_str(), m_PhotonF1);
+  owner->ConnectVariable( treename.c_str(), VarName("ph_Emins1").c_str(), m_PhotonEminS1 );
+  owner->ConnectVariable( treename.c_str(), VarName("ph_emaxs1").c_str(), m_PhotonEmaxS1 );
+  owner->ConnectVariable( treename.c_str(), VarName("ph_Emax2").c_str(), m_PhotonEmax2 );
+  owner->ConnectVariable( treename.c_str(), VarName("ph_E233").c_str(), m_PhotonE233 );
+  owner->ConnectVariable( treename.c_str(), VarName("ph_E237").c_str(), m_PhotonE237 );
+  owner->ConnectVariable( treename.c_str(), VarName("ph_E277").c_str(), m_PhotonE277 );
+  owner->ConnectVariable( treename.c_str(), VarName("ph_fside").c_str(), m_Photonfside );
+  owner->ConnectVariable( treename.c_str(), VarName("ph_ws3").c_str(), m_Photonws3 );
+  owner->ConnectVariable( treename.c_str(), VarName("ph_wstot").c_str(), m_PhotonWSTot );
+  owner->ConnectVariable( treename.c_str(), VarName("ph_weta2").c_str(), m_PhotonWEta2 );
+//  owner->ConnectVariable( treename.c_str(), VarName("ph_deltaeta1").c_str(), m_PhotonDeltaEta1 );
+  owner->ConnectVariable( treename.c_str(), VarName("ph_reta").c_str(), m_PhotonREta );
+  owner->ConnectVariable( treename.c_str(), VarName("ph_rphi").c_str(), m_PhotonRPhi);
+//  owner->ConnectVariable( treename.c_str(), VarName("ph_ptcone20").c_str(), m_PhotonTrackIso );
+  owner->ConnectVariable( treename.c_str(), VarName("ph_etas2").c_str(), m_PhotonEtaS2 );
+  owner->ConnectVariable( treename.c_str(), VarName("ph_etap").c_str(), m_PhotonPointing );
+  owner->ConnectVariable( treename.c_str(), VarName("ph_loose").c_str(), m_PhotonLoose );
+  owner->ConnectVariable( treename.c_str(), VarName("ph_tight").c_str(), m_PhotonTight );
+}
+void PhotonReader::DeclareVariables(){
+}
+void PhotonReader::Reset(){
+  }
+void PhotonReader::CopyToOutput(){
+}
+
+void PhotonReader::PhotonFourVector(int il,TLorentzVector& photon){
+    eg2011::EnergyRescaler eRescale;  
+//    EnergyRescaler eRescale;  
+    eRescale.useDefaultCalibConstants("2012");
+    eRescale.SetRandomSeed(EventNumber+(il*10)); 
+    double ph_smeared_E;   
+    double et = m_PhotonClusterE->at(il)/cosh(m_PhotonEtaS2->at(il));
+    if(isMC) 
+  {
+//  ConvertedPhotonScaleTool converted_tool("$SFRAME_DIR/../packages/egammaAnalysisUtils/share/conversion.root");
+  double cluster_eta = m_PhotonEtaS2->at(il); // example with D3PD
+  double cluster_energy = m_PhotonE->at(il)*eRescale.getSmearingCorrectionMeV(m_PhotonClusterEta->at(il),m_PhotonE->at(il),0,false); // example with D3PD
+  double conversion_radius = m_PhotonRconv->at(il); // example with D3PD
+//  double converted_scale = converted_tool.Scale(cluster_eta,cluster_energy,conversion_radius);  // in mm
+  double converted_scale = 1;
+  double  cluster_energy_corrected = cluster_energy * converted_scale; 
+  ph_smeared_E = cluster_energy_corrected;
+  }
+  else if(!isMC){ph_smeared_E = eRescale.applyEnergyCorrectionMeV(m_PhotonClusterEta->at(il), m_PhotonClusterPhi->at(il),m_PhotonE->at(il),et,2, "CONVERTED_PHOTON");}
+  double ph_pt = ph_smeared_E/cosh(m_PhotonEtaS2->at(il));
+  photon.SetPtEtaPhiE(ph_pt,m_PhotonClusterEta->at(il),m_PhotonClusterPhi->at(il),ph_smeared_E);
+  return;
+}
+double PhotonReader::CorrectedIso(int il,int method,float ConeSize)
+{
+  TLorentzVector photon;
+  PhotonFourVector(il,photon); 
+  double ph_smeared_E = photon.E();
+  double ph_Iso_corrected = 0;
+  double ED_median = m_PhotonED_median->at(il);
+if(method == 0){
+  double Iso;
+  if(ConeSize==20) Iso = m_PhotonIsoCone20->at(il);
+  if(ConeSize==30) Iso = m_PhotonIsoCone30->at(il);
+  if(ConeSize==40) Iso = m_PhotonIsoCone40->at(il);
+ph_Iso_corrected = CaloIsoCorrection::GetPtEDCorrectedIsolation(m_PhotonIsoCone40->at(il),m_PhotonIsoCone40_ED_corrected->at(il),ph_smeared_E,m_PhotonEtaS2->at(il),m_PhotonPointing->at(il),m_PhotonClusterEta->at(il),ConeSize,isMC,Iso,m_PhotonIsConv->at(il),CaloIsoCorrection::PHOTON);
+} 
+if(method==1)
+{
+  double Iso;
+  if(ConeSize==20) Iso = m_PhotonTopoCone20->at(il);
+  if(ConeSize==30) Iso = m_PhotonTopoCone30->at(il);
+  if(ConeSize==40) Iso = m_PhotonTopoCone40->at(il);
+ph_Iso_corrected = CaloIsoCorrection::GetPtEDCorrectedTopoIsolation(ED_median,m_PhotonClusterE->at(il),m_PhotonEtaS2->at(il),m_PhotonPointing->at(il),m_PhotonClusterEta->at(il),ConeSize,isMC,Iso,m_PhotonIsConv->at(il),CaloIsoCorrection::PHOTON);
+}
+return ph_Iso_corrected;
+}
+
+bool PhotonReader::IsGoodPhoton(int il,float etmin,bool isBkgStudy,std::vector<int> &Phcounter)    
+{
+  TLorentzVector photon;
+  PhotonFourVector(il,photon); 
+double ph_pt = photon.Pt();
+//float ph_Etcone30_corrected = m_PhotonTopoCone30->at(il);
+double aeta = fabs(m_PhotonEtaS2->at(il));
+Phcounter.at(0)++;
+if (ph_pt < etmin) return false;
+  Phcounter.at(1)++;
+  if ( ( (m_PhotonOQ->at(il)&134217728)!=0 && (m_PhotonREta->at(il)>0.98||m_PhotonRPhi->at(il)>1.0||(m_PhotonOQ->at(il)&67108864)!=0) ) ) return false;
+  if(!(m_PhotonOQ->at(il)&34214)==0) return false;
+  Phcounter.at(2)++;
+  if ( aeta >= 2.47 || ( (aeta >= 1.37) && ( aeta <= 1.52 )))  return false;
+  Phcounter.at(3)++;
+
+FudgeMCTool fudgePhoton;
+fudgePhoton.SetPreselection(13);
+double eta2=m_PhotonEtaS2->at(il);
+double rhad1=m_PhotonEtHadOne->at(il)/ph_pt;
+double rhad=m_PhotonEtHad->at(il)/ph_pt;
+double e277= m_PhotonE277->at(il);
+double reta=m_PhotonREta->at(il);
+double rphi=m_PhotonRPhi->at(il) ;
+double weta2=m_PhotonWEta2->at(il);
+double f1=m_PhotonF1->at(il);
+double fside=m_Photonfside->at(il);
+double wtot=m_PhotonWSTot->at(il);
+double w1 = m_Photonws3->at(il);
+double m_emax2=m_PhotonEmax2->at(il);
+double m_emin2 = m_PhotonEminS1->at(il);
+double m_emax1 = m_PhotonEmaxS1->at(il);
+double deltae = m_emax2-m_emin2;  
+double eratio = (m_emax1+m_emax2)==0. ? 0 : (m_emax1-m_emax2)/(m_emax1+m_emax2);
+if(isMC)
+{fudgePhoton.FudgeShowers( ph_pt,eta2,rhad1,rhad,e277,reta,rphi,weta2,f1,fside,wtot,w1,deltae,eratio,m_PhotonIsConv->at(il),6);
+}
+PhotonIDTool GammaSelection = PhotonIDTool(ph_pt,eta2,rhad1,rhad,e277,reta,rphi,weta2,f1,fside,wtot,w1,deltae,eratio,m_PhotonIsConv->at(il) );
+//int map =2;
+bool passtight = GammaSelection.PhotonCutsTight(2012);
+unsigned int newisEM = GammaSelection.isEM(4,2012);
+bool isLoose = !(newisEM & 392194); 
+if(!isBkgStudy&&!passtight) return false;
+//std::cout<<m_PhotonIsConv->at(il) <<std::cout;
+//if(isBkgStudy&&!isLoose) return false;
+//if(isBkgStudy) return false;
+  Phcounter.at(4)++;
+//if(fabs(ph_Etcone30_corrected)> 6000) return false;
+  Phcounter.at(5)++;
+  return true;
+}
+std::vector<double> PhotonReader::PhotonShowerShapes(int il)
+{
+TLorentzVector photon;
+PhotonFourVector(il,photon); 
+double ph_pt = photon.Pt();
+std::vector<double> showershapes;
+FudgeMCTool fudgePhoton;
+fudgePhoton.SetPreselection(13);
+double eta2=m_PhotonEtaS2->at(il);
+double rhad1=m_PhotonEtHadOne->at(il)/ph_pt;
+double rhad=m_PhotonEtHad->at(il)/ph_pt;
+double e277= m_PhotonE277->at(il);
+double reta=m_PhotonREta->at(il);
+double rphi=m_PhotonRPhi->at(il) ;
+double weta2=m_PhotonWEta2->at(il);
+double f1=m_PhotonF1->at(il);
+double fside=m_Photonfside->at(il);
+double wtot=m_PhotonWSTot->at(il);
+double w1 = m_Photonws3->at(il);
+double m_emax2=m_PhotonEmax2->at(il);
+double m_emin2 = m_PhotonEminS1->at(il);
+double m_emax1 = m_PhotonEmaxS1->at(il);
+double deltae = m_emax2-m_emin2;  
+double eratio = (m_emax1+m_emax2)==0. ? 0 : (m_emax1-m_emax2)/(m_emax1+m_emax2);
+if(isMC)
+{fudgePhoton.FudgeShowers( ph_pt,eta2,rhad1,rhad,e277,reta,rphi,weta2,f1,fside,wtot,w1,deltae,eratio,m_PhotonIsConv->at(il),6);
+}
+//PhotonIDTool GammaSelection = PhotonIDTool(ph_pt,eta2,rhad1,rhad,e277,reta,rphi,weta2,f1,fside,wtot,w1,deltae,eratio,m_PhotonIsConv->at(il) );
+showershapes.push_back(eta2);
+showershapes.push_back(rhad1);
+showershapes.push_back(rhad);
+showershapes.push_back(e277);
+showershapes.push_back(reta);
+showershapes.push_back(rphi);
+showershapes.push_back(weta2);
+showershapes.push_back(f1);
+showershapes.push_back(fside);
+showershapes.push_back(wtot);
+showershapes.push_back(w1);
+showershapes.push_back(deltae);
+showershapes.push_back(eratio);
+showershapes.push_back(m_PhotonIsConv->at(il));
+return showershapes;
+}

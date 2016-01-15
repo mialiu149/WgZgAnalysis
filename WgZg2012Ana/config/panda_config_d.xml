@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE JobConfiguration PUBLIC "" "JobConfig.dtd"[
+  <!ENTITY datafiles SYSTEM "input_grid.xml"> 
+]>
+
+<JobConfiguration JobName="ExampleJob" OutputLevel="INFO">
+  <Library Name="libSFramePlugIns" />
+  <Library Name="libCintex" />
+  <Library Name="libSFrameCintex" />
+  <Library Name="libDukHep" />
+  <Library Name="libGoodRunsLists" />
+  <Library Name="libPileupReweighting" />
+  <Library Name="libMyFirstPackage"/>
+    <Cycle Name="ExampleAnalysisCycle" OutputDirectory="./" PostFix="" TargetLumi="1.0">
+	<InputData Lumi="0.0" NEventsMax="-1" Type="Data" Version="0">
+	  &datafiles;
+	  <InputTree Name="physics" />
+	  <OutputTree Name="d4pd" />
+	</InputData>
+	<UserConfig>
+	  <Item Name="GoodRunList" Value="example_grl.xml" />
+	  <Item Name="IgnoreGRL" Value="false"/>
+	  <Item Name="TriggerName" Value="EF_e20_medium"/>
+	</UserConfig>
+    </Cycle>
+</JobConfiguration>

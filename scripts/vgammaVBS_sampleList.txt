@@ -1,0 +1,104 @@
+#dataset name	DatasetID	Xsection[pb]	k-factor	Filter Eff.	Generator	ProcessInfo	Nevents(Unweighted) Info/Comment
+##################################################################################################
+#
+#	V+2jet VBS
+#
+##################################################################################################
+mc12_8TeV.185304.Sherpa_CT10_Wenugamma2jetVBS.merge.NTUP_SMWZ_e2366_s1581_s1586_r4485_r4540_p1328/	185304	0.4496	1.0 1.0 Sherpa W(enu)+2jet_VBS_signal 300000
+mc12_8TeV.185305.Sherpa_CT10_Wmunugamma2jetVBS.merge.NTUP_SMWZ_e2366_s1581_s1586_r4485_r4540_p1328/	185305	0.4496	1.0 1.0 Sherpa W(munu)+2jet_VBS_signal 299997
+mc12_8TeV.185306.Sherpa_CT10_Wtaunugamma2jetVBS.merge.NTUP_SMWZ_e2366_s1581_s1586_r4485_r4540_p1328/	185306	0.4496	1.0 1.0 Sherpa W(taunu)+2jet_VBS_signal 300000
+mc12_8TeV.185477.Sherpa_CT10_Zeegamma2jetVBS.merge.NTUP_SMWZ_e2571_s1773_s1776_r4485_r4540_p1328/	185477	0.031	1.0 1.0 Sherpa Z(ee)+2jet_VBS_signal 200000
+mc12_8TeV.185478.Sherpa_CT10_Zmumugamma2jetVBS.merge.NTUP_SMWZ_e2571_s1773_s1776_r4485_r4540_p1328/	185478	0.031	1.0 1.0 Sherpa Z(mumu)+2jet_VBS signal 199000
+mc12_8TeV.185479.Sherpa_CT10_Ztautaugamma2jetVBS.merge.NTUP_SMWZ_e2571_s1773_s1776_r4485_r4540_p1328/	185479	0.0319	1.0 1.0 Sherpa Z(tautau)+2jet_VBS_signal 200000
+mc12_8TeV.185480.Sherpa_CT10_Znunugamma2jetVBS.merge.NTUP_SMWZ_e2571_s1773_s1776_r4485_r4540_p1328/	185480	0.010	1.0 1.0 Sherpa Z(nunu)+2jet_VBS_signal 299997
+##################################################################################################
+#
+#	W+jets
+#
+##################################################################################################
+mc12_8TeV.147774.Sherpa_CT10_Wenu.merge.NTUP_SMWZ.e1434_s1499_s1504_r3658_r3549_p1328/  147774  12185.8 1       1       Sherpa(MENLOPS) W->enu(CT10)    39997817        weighted(1.540386934e+15)
+mc12_8TeV.147775.Sherpa_CT10_Wmunu.merge.NTUP_SMWZ.e1434_s1499_s1504_r3658_r3549_p1328/ 147775  12185.8 1       1       Sherpa(MENLOPS) W->munu(CT10)   39996634        weighted(9.563698302+14)
+mc12_8TeV.147776.Sherpa_CT10_Wtaunu.merge.NTUP_SMWZ.e1434_s1499_s1504_r3658_r3549_p1328/        147776  12185.8 1       1       Sherpa  W->taunu(CT10)  6998385 	weighted(?)
+mc12_8TeV.107680.AlpgenJimmy_AUET2CTEQ6L1_WenuNp0.merge.NTUP_SMWZ.e1571_s1499_s1504_r3658_r3549_p1328/  107680  8037.1  1.19    1       Alpgen  Wenu+0p(CTEQ6L1)        3459718
+mc12_8TeV.107681.AlpgenJimmy_AUET2CTEQ6L1_WenuNp1.merge.NTUP_SMWZ.e1571_s1499_s1504_r3658_r3549_p1328/  107681  1579.2  1.19    1       Alpgen  Wenu+1p(CTEQ6L1)        2499797
+mc12_8TeV.107682.AlpgenJimmy_AUET2CTEQ6L1_WenuNp2.merge.NTUP_SMWZ.e1571_s1499_s1504_r3658_r3549_p1328/  107682  477.2   1.19    1       Alpgen  Wenu+2p(CTEQ6L1)        3769889
+mc12_8TeV.107683.AlpgenJimmy_AUET2CTEQ6L1_WenuNp3.merge.NTUP_SMWZ.e1571_s1499_s1504_r3658_r3549_p1328/  107683  133.93  1.19    1       Alpgen  Wenu+3p(CTEQ6L1)        1009965
+mc12_8TeV.107684.AlpgenJimmy_AUET2CTEQ6L1_WenuNp4.merge.NTUP_SMWZ.e1571_s1499_s1504_r3658_r3549_p1328/  107684  35.622  1.19    1       Alpgen  Wenu+4p(CTEQ6L1)        249999 
+mc12_8TeV.107685.AlpgenJimmy_AUET2CTEQ6L1_WenuNp5.merge.NTUP_SMWZ.e1571_s1499_s1504_r3658_r3549_p1328/  107685  10.553  1.19    1       Alpgen  Wenu+5p(CTEQ6L1)        70000   
+mc12_8TeV.107690.AlpgenJimmy_AUET2CTEQ6L1_WmunuNp0.merge.NTUP_SMWZ.e1571_s1499_s1504_r3658_r3549_p1328/ 107690  8040    1.19    1       Alpgen  Wmunu+0p(CTEQ6L1)       3469591
+mc12_8TeV.107691.AlpgenJimmy_AUET2CTEQ6L1_WmunuNp1.merge.NTUP_SMWZ.e1571_s1499_s1504_r3658_r3549_p1328/ 107691  1580.3  1.19    1       Alpgen  Wmunu+1p(CTEQ6L1)       2499893
+mc12_8TeV.107692.AlpgenJimmy_AUET2CTEQ6L1_WmunuNp2.merge.NTUP_SMWZ.e1571_s1499_s1504_r3658_r3549_p1328/ 107692  477.5   1.19    1       Alpgen  Wmunu+2p(CTEQ6L1)       3764886
+mc12_8TeV.107693.AlpgenJimmy_AUET2CTEQ6L1_WmunuNp3.merge.NTUP_SMWZ.e1571_s1499_s1504_r3658_r3549_p1328/ 107693  133.94  1.19    1       Alpgen  Wmunu+3p(CTEQ6L1)       1009896
+mc12_8TeV.107694.AlpgenJimmy_AUET2CTEQ6L1_WmunuNp4.merge.NTUP_SMWZ.e1571_s1499_s1504_r3658_r3549_p1328/ 107694  35.636  1.19    1       Alpgen  Wmunu+4p(CTEQ6L1)       255000 
+mc12_8TeV.107695.AlpgenJimmy_AUET2CTEQ6L1_WmunuNp5.merge.NTUP_SMWZ.e1571_s1499_s1504_r3658_r3549_p1328/    107695    10.571    1.19    1    Alpgen    Wmunu+5p(CTEQ6L1)    20000   
+mc12_8TeV.107700.AlpgenJimmy_AUET2CTEQ6L1_WtaunuNp0.merge.NTUP_SMWZ.e1571_s1499_s1504_r3658_r3549_p1328/        107700  8035.8  1.19    1       Alpgen  Wtaunu+0p(CTEQ6L1)      3364789
+mc12_8TeV.107701.AlpgenJimmy_AUET2CTEQ6L1_WtaunuNp1.merge.NTUP_SMWZ.e1571_s1499_s1504_r3658_r3549_p1328/        107701  1579.8  1.19    1       Alpgen  Wtaunu+1p(CTEQ6L1)      2449991
+mc12_8TeV.107702.AlpgenJimmy_AUET2CTEQ6L1_WtaunuNp2.merge.NTUP_SMWZ.e1571_s1499_s1504_r3658_r3549_p1328/        107702  477.55  1.19    1       Alpgen  Wtaunu+2p(CTEQ6L1)      3719888
+mc12_8TeV.107703.AlpgenJimmy_AUET2CTEQ6L1_WtaunuNp3.merge.NTUP_SMWZ.e1571_s1499_s1504_r3658_r3549_p1328/        107703  133.79  1.19    1       Alpgen  Wtaunu+3p(CTEQ6L1)      1009993
+mc12_8TeV.107704.AlpgenJimmy_AUET2CTEQ6L1_WtaunuNp4.merge.NTUP_SMWZ.e1571_s1499_s1504_r3658_r3549_p1328/        107704  35.583  1.19    1       Alpgen  Wtaunu+4p(CTEQ6L1)      249898 
+mc12_8TeV.107705.AlpgenJimmy_AUET2CTEQ6L1_WtaunuNp5.merge.NTUP_SMWZ.e1571_s1499_s1504_r3658_r3549_p1328/        107705  10.54   1.19    1       Alpgen  Wtaunu+5p(CTEQ6L1)      65000  
+##################################################################################################
+#
+#	Z+jets
+#
+##################################################################################################
+mc12_8TeV.147770.Sherpa_CT10_Zee.merge.NTUP_SMWZ.e1434_s1499_s1504_r3658_r3549_p1328/   147770  1241.2  1       1       Sherpa(MENLOPS) Z->ee(40GeV<M)(CT10)    29993053        weighted(?)
+mc12_8TeV.147771.Sherpa_CT10_Zmumu.merge.NTUP_SMWZ.e1434_s1499_s1504_r3658_r3549_p1328/ 147771  1241.2  1       1       Sherpa(MENLOPS) Z->mumu(40GeV<M)(CT10)  29989732        weighted(7.062441217e+13)
+mc12_8TeV.147772.Sherpa_CT10_Ztautau.merge.NTUP_SMWZ.e1434_s1499_s1504_r3658_r3549_p1328/       147772  1241.2  1       1       Sherpa  Z->tautau(40GeV<M)(CT10)        14998212       
+mc12_8TeV.147773.Sherpa_CT10_Znunu.merge.NTUP_SMWZ.e1434_s1499_s1504_r3658_r3549_p1328/ 147773  6648.7  1       1       Sherpa  Z->nunu(CT10)   4999896  
+mc12_8TeV.107650.AlpgenJimmy_AUET2CTEQ6L1_ZeeNp0.merge.NTUP_SMWZ.e1571_s1499_s1504_r3658_r3549_p1328/   107650  711.77  1.23    1       Alpgen  Zee+0p(60<M<2000GeV)(CTEQ6L1)   6608782
+mc12_8TeV.107651.AlpgenJimmy_AUET2CTEQ6L1_ZeeNp1.merge.NTUP_SMWZ.e1571_s1499_s1504_r3658_r3549_p1328/   107651  155.17  1.23    1       Alpgen  Zee+1p(60<M<2000GeV)(CTEQ6L1)   1335000
+mc12_8TeV.107652.AlpgenJimmy_AUET2CTEQ6L1_ZeeNp2.merge.NTUP_SMWZ.e1571_s1499_s1504_r3658_r3549_p1328/   107652  48.745  1.23    1       Alpgen  Zee+2p(60<M<2000GeV)(CTEQ6L1)   404499 
+mc12_8TeV.107653.AlpgenJimmy_AUET2CTEQ6L1_ZeeNp3.merge.NTUP_SMWZ.e1571_s1499_s1504_r3658_r3549_p1328/   107653  14.225  1.23    1       Alpgen  Zee+3p(60<M<2000GeV)(CTEQ6L1)   110000 
+mc12_8TeV.107654.AlpgenJimmy_AUET2CTEQ6L1_ZeeNp4.merge.NTUP_SMWZ.e1571_s1499_s1504_r3658_r3549_p1328/   107654  3.7595  1.23    1       Alpgen  Zee+4p(60<M<2000GeV)(CTEQ6L1)   30000   
+mc12_8TeV.107655.AlpgenJimmy_AUET2CTEQ6L1_ZeeNp5.merge.NTUP_SMWZ.e1571_s1499_s1504_r3658_r3549_p1328/   107655  1.0945  1.23    1       Alpgen  Zee+5p(60<M<2000GeV)(CTEQ6L1)   10000   
+mc12_8TeV.107660.AlpgenJimmy_AUET2CTEQ6L1_ZmumuNp0.merge.NTUP_SMWZ.e1571_s1499_s1504_r3658_r3549_p1328/ 107660  712.11  1.23    1       Alpgen  Zmumu+0p(60<M<2000GeV)(CTEQ6L1) 6619489
+mc12_8TeV.107661.AlpgenJimmy_AUET2CTEQ6L1_ZmumuNp1.merge.NTUP_SMWZ.e1571_s1499_s1504_r3658_r3549_p1328/ 107661  154.77  1.23    1       Alpgen  Zmumu+1p(60<M<2000GeV)(CTEQ6L1) 1334706
+mc12_8TeV.107662.AlpgenJimmy_AUET2CTEQ6L1_ZmumuNp2.merge.NTUP_SMWZ.e1571_s1499_s1504_r3658_r3549_p1328/ 107662  48.912  1.23    1       Alpgen  Zmumu+2p(60<M<2000GeV)(CTEQ6L1) 404997 
+mc12_8TeV.107663.AlpgenJimmy_AUET2CTEQ6L1_ZmumuNp3.merge.NTUP_SMWZ.e1571_s1499_s1504_r3658_r3549_p1328/ 107663  14.226  1.23    1       Alpgen  Zmumu+3p(60<M<2000GeV)(CTEQ6L1) 110000 
+mc12_8TeV.107664.AlpgenJimmy_AUET2CTEQ6L1_ZmumuNp4.merge.NTUP_SMWZ.e1571_s1499_s1504_r3658_r3549_p1328/ 107664  3.7838  1.23    1       Alpgen  Zmumu+4p(60<M<2000GeV)(CTEQ6L1) 30000   
+mc12_8TeV.107665.AlpgenJimmy_AUET2CTEQ6L1_ZmumuNp5.merge.NTUP_SMWZ.e1571_s1499_s1504_r3658_r3549_p1328/ 107665  1.1148  1.23    1       Alpgen  Zmumu+5p(60<M<2000GeV)(CTEQ6L1) 10000   
+mc12_8TeV.107670.AlpgenJimmy_AUET2CTEQ6L1_ZtautauNp0.merge.NTUP_SMWZ.e1571_s1499_s1504_r3658_r3549_p1328/       107670  711.81  1.23    1       Alpgen  Ztautau+0p(60<M<2000GeV)(CTEQ6L1)       6619683
+mc12_8TeV.107671.AlpgenJimmy_AUET2CTEQ6L1_ZtautauNp1.merge.NTUP_SMWZ.e1571_s1499_s1504_r3658_r3549_p1328/       107671  155.13  1.23    1       Alpgen  Ztautau+1p(60<M<2000GeV)(CTEQ6L1)       1334996
+mc12_8TeV.107672.AlpgenJimmy_AUET2CTEQ6L1_ZtautauNp2.merge.NTUP_SMWZ.e1571_s1499_s1504_r3658_r3549_p1328/       107672  48.804  1.23    1       Alpgen  Ztautau+2p(60<M<2000GeV)(CTEQ6L1)       404997 
+mc12_8TeV.107673.AlpgenJimmy_AUET2CTEQ6L1_ZtautauNp3.merge.NTUP_SMWZ.e1571_s1499_s1504_r3658_r3549_p1328/       107673  14.16   1.23    1       Alpgen  Ztautau+3p(60<M<2000GeV)(CTEQ6L1)       110000 
+mc12_8TeV.107674.AlpgenJimmy_AUET2CTEQ6L1_ZtautauNp4.merge.NTUP_SMWZ.e1571_s1499_s1504_r3658_r3549_p1328/       107674  3.7744  1.23    1       Alpgen  Ztautau+4p(60<M<2000GeV)(CTEQ6L1)       30000   
+mc12_8TeV.107675.AlpgenJimmy_AUET2CTEQ6L1_ZtautauNp5.merge.NTUP_SMWZ.e1571_s1499_s1504_r3658_r3549_p1328/       107675  1.1163  1.23    1       Alpgen  Ztautau+5p(60<M<2000GeV)(CTEQ6L1)       10000  
+##################################################################################################
+#
+#	Wgamma
+#
+##################################################################################################
+mc12_8TeV.126739.Sherpa_CT10_enugammaPt10.merge.NTUP_SMWZ.e1434_s1499_s1504_r3658_r3549_p1328/	126739	162.89	1 1 Sherpa enugamma 11798964
+mc12_8TeV.126742.Sherpa_CT10_munugammaPt10.merge.NTUP_SMWZ.e1434_s1499_s1504_r3658_r3549_p1328/	126742	162.89	1 1 Sherpa munugamma 11798473
+mc12_8TeV.126856.Sherpa_CT10_taunugammaPt10.merge.NTUP_SMWZ.e1434_s1499_s1504_r3658_r3549_p1328/ 126856	162.89	1 1 Sherpa taunugamma 6798789
+mc12_8TeV.146436.AlpgenJimmy_AUET2CTEQ6L1_WgammaNp0_LeptonPhotonFilter.merge.NTUP_SMWZ.e1260_s1469_s1470_r3542_r3549_p1328/ 146436
+mc12_8TeV.146437.AlpgenJimmy_AUET2CTEQ6L1_WgammaNp1_LeptonPhotonFilter.merge.NTUP_SMWZ.e1260_s1469_s1470_r3752_r3549_p1328/ 146437
+mc12_8TeV.146438.AlpgenJimmy_AUET2CTEQ6L1_WgammaNp2_LeptonPhotonFilter.merge.NTUP_SMWZ.e1260_s1469_s1470_r3542_r3549_p1328/ 146438
+mc12_8TeV.146439.AlpgenJimmy_AUET2CTEQ6L1_WgammaNp3_LeptonPhotonFilter.merge.NTUP_SMWZ.e1293_s1469_s1470_r3752_r3549_p1328/ 146439
+mc12_8TeV.146434.AlpgenJimmy_AUET2CTEQ6L1_WgammaNp4.merge.NTUP_SMWZ.e1293_s1469_s1470_r3542_r3549_p1328/ 146434
+mc12_8TeV.146435.AlpgenJimmy_AUET2CTEQ6L1_WgammaNp5.merge.NTUP_SMWZ.e1293_s1469_s1470_r3542_r3549_p1328/ 146435
+##################################################################################################
+#
+#	Zgamma
+#
+##################################################################################################
+mc12_8TeV.145161.Sherpa_CT10_eegammaPt10.merge.NTUP_SMWZ.e1434_s1499_s1504_r3658_r3549_p1328/		145161	32.317	1 1 Sherpa eegamma 8844673
+mc12_8TeV.145162.Sherpa_CT10_mumugammaPt10.merge.NTUP_SMWZ.e1434_s1499_s1504_r3658_r3549_p1328/		145162	32.317	1 1 Sherpa mumugamma 9198579
+mc12_8TeV.126854.Sherpa_CT10_tautaugammaPt10.merge.NTUP_SMWZ.e1434_s1499_s1504_r3658_r3549_p1328/	126854	32.317	1 1 Sherpa tautaugamma 3999409
+##################################################################################################
+#
+#	ttbar
+#
+##################################################################################################
+mc12_8TeV.117001.PowhegPythia_P2011C_HERAPDF15NLO_ttbar.merge.NTUP_SMWZ.e2077_s1581_s1586_r4485_r4540_p1328/	117001	105.84	1 0.54291  Powheg+Pythia non-hadronic_ttbar 4988782
+mc12_8TeV.110001.McAtNloJimmy_CT10_ttbar_dilepton.merge.NTUP_SMWZ.e1576_s1499_s1504_r3658_r3549_p1328/   110001  20.778  1 1 MCAtNlo  non-hadronic_ttbar 
+##################################################################################################
+#
+#	gamma+jets
+#
+##################################################################################################
+mc12_8TeV.129171.Pythia8_AU2CTEQ6L1_gammajet_DP35.merge.NTUP_SMWZ.e1146_s1468_s1470_r3542_r3549_p1328/	129171	5.8768e7 1 4.0281e-4 Pythia8 photonJet_production(35GeVFilter) 2999792
+mc12_8TeV.129172.Pythia8_AU2CTEQ6L1_gammajet_DP70.merge.NTUP_SMWZ.e1146_s1468_s1470_r3542_r3549_p1328/	129172	3.4250e6 1 5.7049e-4 Pythia8 photonJet_production(70GeVFilter) 2999985
+mc12_8TeV.129173.Pythia8_AU2CTEQ6L1_gammajet_DP140.merge.NTUP_SMWZ.e1146_s1468_s1470_r3542_r3549_p1328/	129173	1.2217e7 1 9.6876e-4 Pythia8 photonJet_production(140GeVFilter) 999994
+##################################################################################################

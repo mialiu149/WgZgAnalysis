@@ -1,0 +1,12 @@
+#!/bin/bash
+echo 'RootCore dir:'
+echo $ROOTCOREDIR
+test "x$ROOTCOREDIR" = "x" && echo "ROOTCOREDIR not set, source setup.sh" &&
+source __panda_rootCoreWorkDir/RootCore/scripts/setup.sh
+cd SFrame
+source setup.sh
+cd ..
+source DukHep/bin/GetPID
+source DukHep/bin/GetFFT
+make distclean
+make

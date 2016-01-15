@@ -1,0 +1,58 @@
+#!/bin/env bash
+#note: egammaanalysisutils works best as a dummy sframe package.
+adios() { echo This script failed!!!!; false; }
+[ ${0} == '-bash' ] || adios() { exit 1; }  
+
+createlinkdef() {
+cat << EOF >> egammaAnalysisUtils/egammaAnalysisUtils_LinkDef.h
+#ifdef __CINT__
+
+#pragma link off all globals;
+#pragma link off all classes;
+#pragma link off all functions;
+
+#pragma link C++ nestedclass;
+#endif // __CINT__
+EOF
+}
+
+createmakefile() {
+cat << EOF >> Makefile	
+# Package information
+LIBRARY = egammaAnalysisUtils
+OBJDIR  = obj
+DEPDIR  = \$(OBJDIR)/dep
+SRCDIR  = src
+INCDIR  = egammaAnalysisUtils
+CCCFLAGS = -DSTANDALONE
+# Include the generic compilation rules
+include \$(SFRAME_DIR)/Makefile.common
+EOF
+}
+	
+if [ -z $SFRAME_DIR ]; then
+  echo 'Set up SFRAME environment first.'
+  adios; return 1; 
+fi
+ 
+cd $SFRAME_DIR/..
+if [ -d egammaAnalysisUtils ]; then
+    echo egammaAnalysisUtils already installed
+else
+    svn co svn+ssh://svn.cern.ch/reps/atlasoff/Reconstruction/egamma/egammaAnalysis/egammaAnalysisUtils/tags/egammaAnalysisUtils-00-02-33 egammaAnalysisUtils || { adios; return 1; }
+fi
+  
+cd egammaAnalysisUtils
+[ -d proof ] || mkdir proof
+[ -e Makefile ] || createmakefile 
+[ -e egammaAnalysisUtils/egammaAnalysisUtils_LinkDef.h ] || createlinkdef
+echo 'finding good source files'  
+for x in `ls src/*.C` ; do echo ${x}; mv $x ${x%.C}.cxx; done
+echo 'hiding bad source files'  
+for x in src/IsEMPlusPlusHelper.cxx  egammaAnalysisUtils/IsEMPlusPlusHelper.h src/rel166IsEMDefs.cxx ; do
+    [ -e ${x} ] && mv ${x} ${x}hide
+done
+echo 'compiling sources'
+make distclean 
+make || { adios; return 1; }
+cd $SFRAME_DIR/..

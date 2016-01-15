@@ -1,0 +1,4 @@
+bin/dukhep_create_filter.py -f MacrosForDukHepFilter TopMacros.dat TruthMacros.dat
+bin/dukhep_create_filter.py -t ELE_FILTER -f MacrosForDukHepFilter EleMacros.dat TopMacros.dat
+bin/dukhep_create_filter.py -t WELE_FILTER -f MacrosForDukHepFilter EleMacros.dat WZMacros.dat
+mv MacrosForDukHepFilter.h include/.

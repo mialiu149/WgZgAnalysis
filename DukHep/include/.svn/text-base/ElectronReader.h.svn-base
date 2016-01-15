@@ -1,0 +1,160 @@
+////bin/dukhep_create_reader.py -n ElectronReader EleMacros.dat MediumPlusPlus.dat
+#ifndef ELECTRONREADER
+#define ELECTRONREADER 1
+#include <vector>
+#include <string>
+#include <map>
+#include "TLorentzVector.h"
+#include "core/include/SCycleBaseNTuple.h"
+#include "egammaAnalysisUtils/CaloIsoCorrection.h"
+#include "egammaAnalysisUtils/EnergyRescaler.h"
+#include "egammaAnalysisUtils/EnergyRescalerUpgrade.h"
+#include "egammaAnalysisUtils/egammaSFclass.h"
+#include "egammaEvent/egammaPIDdefs.h"
+class ElectronReader {
+  public:
+    ElectronReader(SCycleBaseNTuple * o);
+    virtual ~ElectronReader(){};
+    std::string VarName(const char * s) {return std::string(s);};
+    void ConnectVariables(std::string treename);
+    void DeclareVariables();
+    void Reset();
+    void CopyToOutput();
+    void InitEnergyRescaler(std::string filename); 
+    //define your getters here
+    void SetMC(bool is) {isMC = is; okMC=true;};
+    void SetNPV(int pv) {npv = pv;}; //DO THIS ALWAYS
+    void SetEventNumber(int EN) {EventNumber=EN;}; //DO THIS ALWAYS
+    bool UseElectronTrack(unsigned int il);
+    float GetElectronTransverseMomentum(unsigned int il,float&);
+    void FillElectronFourMomentum(unsigned int il,TLorentzVector & v);
+    bool IsGoodElectronExo(unsigned int il, float etmin);
+    bool IsGoodElectronTag(unsigned int il, float etmin);
+    bool IsTrackElectronExo(unsigned int il);
+    bool IsSidebandElectronExo(unsigned int il, float etmin);
+    float GetElectronIso(int,int,float ConeSize);
+    std::pair<float,float> GetScaleFactor(unsigned int il,int set,int runnumber);
+    float CalcIso(unsigned int il) throw ( SError );
+    bool IsGoodElectronTop(unsigned int il, float ptmin);  
+    bool IsGoodElectronEWKW(unsigned int il, float ptmin,std::vector<int>&);  
+    bool IsGoodElectronEWKZ(unsigned int il, float ptmin);  
+    int CountGoodTopElectrons(float etmin=25000)
+    {int count(0); for (int i=0; i<m_NumElectrons; ++i) if (IsGoodElectronTop(i,etmin)) ++count; return count;}
+    bool ElectronMatchesTrigger(unsigned int il) {
+      if (m_ElectronEFDistance->at(il) > 0.15) return false;
+      int matched=m_ElectronEFIndex->at(il);
+      if ((matched < 0)||(matched >= int(m_trig_EF_el_EF_e20_medium->size()))) return false;
+      if (not m_trig_EF_el_EF_e20_medium->at(matched)) return false;
+      return true;
+    }
+    bool IsMediumPlusPlus(unsigned int il);
+    bool IsIsolatedExo(unsigned int il);
+    bool Matching_e20_medium(TLorentzVector lv_ele);
+    bool Matching_e22_medium(TLorentzVector lv_ele);
+    bool Matching_e22vh_medium(TLorentzVector lv_ele);
+    bool Matching_L1_EM14(TLorentzVector lv_ele,int);
+    bool Matching_L1_EM16(TLorentzVector lv_ele,int);
+    bool Matching_L1_EM16_VH(TLorentzVector lv_ele);
+  private:
+    bool isMC,okMC;
+    int EventNumber;
+    int npv;
+  public:
+    SCycleBaseNTuple * owner;    
+    egammaSFclass * m_idSF;
+    egRescaler::EnergyRescalerUpgrade ers;
+  Int_t m_NumElectrons;
+  std::vector<float>* m_ElectronTrackPt;
+  std::vector<float>* m_ElectronTrackQoverP;
+  std::vector<float>* m_ElectronTrackEta;
+  std::vector<float>* m_ElectronTrackPhi;
+  std::vector<float>* m_ElectronTrackTheta;
+  std::vector<float>* m_ElectronVertexZ;
+  std::vector<int>* m_ElectronTrackNPixelHits;
+  std::vector<int>* m_ElectronTrackNSCTHits;
+  std::vector<int>* m_ElectronTrackNBLayerHits;
+  std::vector<int>* m_ElectronTrackNTRTHits;
+  std::vector<int>* m_ElectronTrackNTRTHighThresholdHits;
+  std::vector<float>* m_ElectronTrackD0;
+  std::vector<float>* m_ElectronTrackD0SigWRTBeam;
+  std::vector<float>* m_ElectronTrackD0SigWRTPV;
+  std::vector<float>* m_ElectronUnbiasedTrackD0SigWRTPV;
+  std::vector<float>* m_ElectronTrackZ0;
+  std::vector<int>* m_ElectronAuthor;
+  std::vector<int>* m_ElectronMedium;
+  std::vector<unsigned int>* m_ElectronOQ;
+  std::vector<float>* m_ElectronClusterE;
+  std::vector<float>* m_ElectronE;
+  std::vector<float>* m_ElectronPt;
+  std::vector<float>* m_ElectronEta;
+  std::vector<float>* m_ElectronClusterEta;
+  std::vector<float>* m_ElectronClusterPhi;
+  std::vector<float>* m_ElectronClusterPt;
+  std::vector<float>* m_ElectronCharge;
+  std::vector<float>* m_ElectronEFDistance;
+  std::vector<int>* m_ElectronEFIndex;
+  std::vector<unsigned int>* m_ElectronisEM;	
+  Int_t m_trig_EF_el_n;
+  bool m_EF_e20_medium;
+  bool m_EF_e22_medium;
+  bool m_L1_EM14;
+  bool m_L1_EM16;
+  std::vector<float>* m_trig_EF_el_pt;	
+  std::vector<float>* m_trig_EF_el_eta;	
+  std::vector<float>* m_trig_EF_el_phi;	
+  std::vector<int>*   m_trig_EF_el_EF_e20_medium;
+  std::vector<int>*   m_trig_EF_el_EF_e22_medium;	
+  std::vector<float>* m_el_L1_dr;	
+  std::vector<int>*   m_el_L1_index;
+  std::vector<float>* m_PrimaryVertexZ;
+  std::vector<float>* m_ElectronEtHad;
+  std::vector<float>* m_ElectronEtHadOne;
+  std::vector<float>* m_ElectronF1;
+  std::vector<float>* m_ElectronEminS1;
+  std::vector<float>* m_ElectronEmaxS1;
+  std::vector<float>* m_ElectronEmax2;
+  std::vector<float>* m_ElectronE237;
+  std::vector<float>* m_ElectronE233;
+  std::vector<float>* m_ElectronE277;
+  std::vector<float>* m_ElectronWSTot;
+  std::vector<float>* m_ElectronWS3;
+  std::vector<float>* m_ElectronWEta2;
+  std::vector<float>* m_ElectronDeltaEta1;
+  std::vector<float>* m_ElectronREta;
+  std::vector<float>* m_ElectronRPhi;
+  std::vector<int>* m_ElectronNTRTOutliers;
+  std::vector<int>* m_ElectronNBLSharedHits;
+  std::vector<int>* m_ElectronNBLayerOutliers;
+  std::vector<float>* m_ElectronExpectBLayerHit;
+  std::vector<float>* m_ElectronTRTHighTHitsRatio;
+  std::vector<float>* m_ElectronTRTHighTOutliersRatio;
+  std::vector<int>* m_ElectronNPixelOutliers;
+  std::vector<int>* m_ElectronNSCTOutliers;
+  std::vector<int>* m_ElectronNSiHits;
+  std::vector<float>* m_ElectronTrackIso;
+  std::vector<float>* m_ElectronEtaS2;
+  std::vector<float>* m_ElectronFSide;
+  std::vector<float>* m_ElectronPointing;
+  std::vector<float>* m_ElectronEs0;
+  std::vector<int>* m_ElectronTightPP;
+  std::vector<int>* m_ElectronTight;
+  std::vector<int>* m_ElectronLoosePP;
+  std::vector<int>* m_ElectronMediumPP;
+  std::vector<int>* m_ElectronLoose;
+  std::vector<float>* m_ElectronTrackz0pv;
+  std::vector<float>* m_ElectronTracksigd0pv;
+  std::vector<float>* m_ElectronTrackd0pv;
+  std::vector<float>* m_ElectronEtap;
+  std::vector<float>* m_ElectronEtas2;
+  std::vector<float>* m_ElectronEtcone20;
+  std::vector<float>* m_ElectronPtcone20;
+  std::vector<float>* m_ElectronTopoIsocone20;
+  std::vector<float>* m_ElectronEtcone30;
+  std::vector<float>* m_ElectronPtcone30;
+  std::vector<float>* m_ElectronTopoIsocone30;
+  std::vector<float>* m_ElectronEtcone40;
+  std::vector<float>* m_ElectronPtcone40;
+  std::vector<float>* m_ElectronTopoIsocone40;
+  std::vector<float>* m_ElectronED_median;
+};
+#endif

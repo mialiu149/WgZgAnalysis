@@ -1,0 +1,49 @@
+#!/bin/env bash
+
+adios() { echo This script failed!!!!; false; }
+[ ${0} == '-bash' ] || adios() { exit 1; }  
+
+if [ -z "${SFRAME_DIR}" ]; then
+  echo 'Set up SFRAME environment first.'
+  adios; return 1; 
+fi
+if [ -z "${ROOTSYS}" ]; then       
+  export ROOTSYS=$(root-config --prefix)     
+fi
+if [ -d ${ROOTSYS}/test/ ]; then
+  echo "Trying with ROOTSYS=$ROOTSYS"
+else
+  export ROOTSYS=$(root-config --prefix)/share/root 
+fi  
+if [ -d ${ROOTSYS} ]; then 
+    cd $SFRAME_DIR/..
+    if [ -d GoodRunsLists ]; then
+	echo GoodRunsLists already installed.
+    else 
+	svn co svn+ssh://svn.cern.ch/reps/atlasoff/DataQuality/GoodRunsLists/tags/GoodRunsLists-00-00-91 GoodRunsLists || { adios; return 1; }
+    fi
+    grep GoodRunsLists $SFRAME_DIR/Makefile.common || sed -e 's#-I./#-I./ -I$(SFRAME_DIR)/../GoodRunsLists#' -i.bak $SFRAME_DIR/Makefile.common
+    cd GoodRunsLists/cmt
+    grep ROOTSYS./bin/rootcint Makefile.Standalone && sed -e 's#$(ROOTSYS)/bin/rootcint#rootcint#' -i.bak Makefile.Standalone
+    grep 'L..ROOTSYS./lib'  Makefile.Standalone && sed -e 's#..ROOTSYS./lib#$(shell root-config --libdir)#' -i.bak Makefile.Standalone
+    make clean -f Makefile.Standalone
+    make -f Makefile.Standalone || { adios; return 1; }
+    [ -e $SFRAME_DIR/lib/libGoodRunsLists.so ] || ln $SFRAME_DIR/../GoodRunsLists/StandAlone/libGoodRunsLists.so $SFRAME_DIR/lib
+    cd $SFRAME_DIR/..
+    if [ -d PileupReweighting ]; then
+	echo 'PileupReweaighting already installed.'
+    else    
+	svn co svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/AnalysisCommon/PileupReweighting/tags/PileupReweighting-00-00-10 PileupReweighting || { adios; return 1; }
+    fi
+    grep PileupReweighting $SFRAME_DIR/Makefile.common || sed -e 's#-I./#-I./ -I$(SFRAME_DIR)/../PileupReweighting#' -i.bak $SFRAME_DIR/Makefile.common
+    grep StandAlone PileupReweighting/cmt/Makefile.Standalone && sed -e 's#../StandAlone#../../SFrame/lib#' -i.bak PileupReweighting/cmt/Makefile.Standalone
+    cd PileupReweighting/cmt
+    grep ROOTSYS./bin/rootcint Makefile.Standalone && sed -e 's#$(ROOTSYS)/bin/rootcint#rootcint#' -i.bak Makefile.Standalone
+    grep 'L..ROOTSYS./lib'  Makefile.Standalone && sed -e 's#..ROOTSYS./lib#$(shell root-config --libdir)#' -i.bak Makefile.Standalone
+    make clean -f Makefile.Standalone
+    make -f Makefile.Standalone || { adios; return 1; }
+    [ -e $SFRAME_DIR/lib/libPileupReweighting.so ] || ln $SFRAME_DIR/../PileupReweighting/StandAlone/libPileupReweighting.so $SFRAME_DIR/lib    
+    cd $SFRAME_DIR/..	
+else
+    echo 'Please set ROOTSYS variable!'
+fi

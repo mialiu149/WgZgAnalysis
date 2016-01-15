@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE JobConfiguration PUBLIC "" "JobConfig.dtd"[
+  <!ENTITY data11PeriodB SYSTEM "inputs_save/input_data11ZeeSkimPeriodB.xml"> 
+  <!ENTITY data11PeriodD SYSTEM "inputs_save/input_data11ZeeSkimPeriodD.xml"> 
+  <!ENTITY data11PeriodE SYSTEM "inputs_save/input_data11ZeeSkimPeriodE.xml"> 
+  <!ENTITY data11PeriodF SYSTEM "inputs_save/input_data11ZeeSkimPeriodF.xml"> 
+  <!ENTITY data11PeriodG SYSTEM "inputs_save/input_data11ZeeSkimPeriodG.xml"> 
+  <!ENTITY data11PeriodH SYSTEM "inputs_save/input_data11ZeeSkimPeriodH.xml"> 
+  <!ENTITY data11PeriodI SYSTEM "inputs_save/input_data11ZeeSkimPeriodI.xml"> 
+  <!ENTITY data11PeriodJ SYSTEM "inputs_save/input_data11ZeeSkimPeriodJ.xml"> 
+  <!ENTITY data11PeriodK SYSTEM "inputs_save/input_data11ZeeSkimPeriodK.xml"> 
+  <!ENTITY data11PeriodL SYSTEM "inputs_save/input_data11ZeeSkimPeriodL.xml"> 
+  <!ENTITY data11PeriodM SYSTEM "inputs_save/input_data11ZeeSkimPeriodM.xml"> 
+  <!ENTITY input2012A SYSTEM "input_data12A_ZeeGamma.xml"> 
+  <!ENTITY input2012B SYSTEM "input_data12B_ZeeGamma.xml"> 
+  <!ENTITY inputMC12Zg SYSTEM "input_MC_ZeeGamma.xml"> 
+  <!ENTITY inputMC12Zjets SYSTEM "input_MC_Zjets.xml"> 
+]>
+
+<JobConfiguration JobName="ExampleJob" OutputLevel="INFO">
+  <Library Name="libSFramePlugIns" />
+  <Library Name="libCintex" />
+  <Library Name="libSFrameCintex" />
+  <Library Name="libGoodRunsLists" />
+  <Library Name="libPileupReweighting" />
+  <Library Name="libReweightUtils" />
+  <Library Name="libMuonEfficiencyCorrections" />
+  <Library Name="libMuonMomentumCorrections" />
+  <Library Name="libegammaAnalysisUtils" />
+  <Library Name="libegammaEvent" />
+  <Library Name="libPhotonIDTool" />
+  <Library Name="libTrigMuonEfficiency" />
+  <Library Name="libMuonIsolationCorrection" />
+  <Library Name="libFudgeMCTool" />
+  <Library Name="libApplyJetCalibration" />
+  <Library Name="libDukHep" />
+  <Library Name="libWgZg2012Ana"/>
+  <Package Name="SFrameCore.par" />
+  <Package Name="SFramePlugIns.par" />
+  <Package Name="SFrameCintex.par" />
+  <Package Name="RootCore.par" />
+  <Package Name="DukHep.par" />
+  <Package Name="WgZg2012Ana.par" />
+    <Cycle Name="ZeegammaEventSelection" OutputDirectory="../Output/" PostFix="" TargetLumi="1.0" RunMode="PROOF" ProofServer="lite://" ProofNodes="8" ProofWorkDir="/afs/cern.ch/work/m/mliu/private/SFrameDuke_r17/" UseTreeCache="False">
+	<InputData Lumi="0.0" NEventsMax="-1" Type="data" Version="Zg.B.v1">
+	  &input2012B;
+	  <InputTree Name="Zg" />
+	  <OutputTree Name="ZgCandidates" />
+	</InputData>
+	<UserConfig>
+	  <Item Name="GoodRunList" Value="/afs/cern.ch/work/m/mliu/private/SFrameDuke_r17/GRL/data12_8TeV.periodAllYear_HEAD_CoolRunQuery-00-04-08_All_Good.xml" /> 
+	  <Item Name="GoodRunListOut" Value="test.xml" /> 
+	  <Item Name="IgnoreGRL" Value="false"/>
+	  <Item Name="TriggerName" Value="EF_2e12Tvh_loose1"/>
+	  <Item Name="nPVCut" Value="true"/>
+	  <Item Name="Trigger" Value="true"/>
+	  <Item Name="LeptonPt" Value="10000"/>
+	  <Item Name="LeptonCut" Value="true"/>
+	  <Item Name="LeptonOSCut" Value="true"/>
+	  <Item Name="ZmassCut1" Value="40000"/>
+	  <Item Name="ZmassCut2" Value="-1"/>
+	  <Item Name="PhotonPt" Value="10000"/>
+	  <Item Name="PhotonIDCut" Value="true"/>
+	  <Item Name="dRLeptonGammaCut" Value="0.3"/>
+	  <Item Name="PhotonIsolation" Value="ph_Etcone30_pt_corrected"/>
+	  <Item Name="PhotonIsoValue" Value="6000"/>
+	</UserConfig>
+    </Cycle>
+    <Cycle Name="ZeegammaEventSelection" OutputDirectory="/afs/cern.ch/work/m/mliu/private/SFrameDuke_r17/Output/" PostFix="" TargetLumi="1.0" RunMode="LOCAL" ProofServer="lite://" ProofNodes="8" ProofWorkDir="/afs/cern.ch/work/m/mliu/private/SFrameDuke_r17/" UseTreeCache="False">
+	<InputData Lumi="0.0" NEventsMax="300000" Type="MC" Version="Zg.v2">
+	  &inputMC12Zg;
+	  <InputTree Name="Zg" />
+	  <OutputTree Name="ZgCandidates" />
+	</InputData>
+	<UserConfig>
+	  <Item Name="GoodRunList" Value="/afs/cern.ch/work/m/mliu/private/SFrameDuke_r17/GRL/data12_8TeV.periodAllYear_HEAD_CoolRunQuery-00-04-08_All_Good.xml" /> 
+	  <Item Name="IgnoreGRL" Value="false"/>
+	  <Item Name="TriggerName" Value="EF_2e12Tvh_loose1"/>
+	  <Item Name="nPVCut" Value="true"/>
+	  <Item Name="Trigger" Value="true"/>
+	  <Item Name="LeptonPt" Value="10000"/>
+	  <Item Name="LeptonCut" Value="true"/>
+	  <Item Name="LeptonOSCut" Value="true"/>
+	  <Item Name="ZmassCut1" Value="40000"/>
+	  <Item Name="ZmassCut2" Value="-1"/>
+	  <Item Name="PhotonPt" Value="10000"/>
+	  <Item Name="PhotonIDCut" Value="true"/>
+	  <Item Name="dRLeptonGammaCut" Value="0.3"/>
+	  <Item Name="PhotonIsolation" Value="ph_Etcone30_pt_corrected"/>
+	  <Item Name="PhotonIsoValue" Value="6000"/>
+	</UserConfig>
+    </Cycle>
+    <Cycle Name="ZeegammaEventSelection" OutputDirectory="/afs/cern.ch/work/m/mliu/private/SFrameDuke_r17/Output/" PostFix="" TargetLumi="1.0" RunMode="LOCAL" ProofServer="lite://" ProofNodes="8" ProofWorkDir="/afs/cern.ch/work/m/mliu/private/SFrameDuke_r17/" UseTreeCache="False">
+	<InputData Lumi="0.0" NEventsMax="-1" Type="MC" Version="Zjets.v1">
+	  &inputMC12Zjets;
+	  <InputTree Name="Zg" />
+	  <OutputTree Name="ZgCandidates" />
+	</InputData>
+	<UserConfig>
+	  <Item Name="GoodRunList" Value="/afs/cern.ch/work/m/mliu/private/SFrameDuke_r17/GRL/data12_8TeV.periodAllYear_HEAD_CoolRunQuery-00-04-08_All_Good.xml" /> 
+	  <Item Name="IgnoreGRL" Value="false"/>
+	  <Item Name="isZjets" Value="true"/>
+	  <Item Name="TriggerName" Value="EF_2e12Tvh_loose1"/>
+	  <Item Name="nPVCut" Value="true"/>
+	  <Item Name="Trigger" Value="true"/>
+	  <Item Name="LeptonPt" Value="10000"/>
+	  <Item Name="LeptonCut" Value="true"/>
+	  <Item Name="LeptonOSCut" Value="true"/>
+	  <Item Name="ZmassCut1" Value="40000"/>
+	  <Item Name="ZmassCut2" Value="-1"/>
+	  <Item Name="PhotonPt" Value="10000"/>
+	  <Item Name="PhotonIDCut" Value="true"/>
+	  <Item Name="dRLeptonGammaCut" Value="0.3"/>
+	  <Item Name="PhotonIsolation" Value="ph_Etcone30_pt_corrected"/>
+	  <Item Name="PhotonIsoValue" Value="6000"/>
+	</UserConfig>
+    </Cycle>
+</JobConfiguration>

@@ -1,0 +1,60 @@
+2011-11-14 Marco Delmastro <Marco.Delmastro@cern.ch>
+	* Added Makefile to compile ROOT shared library
+	* Removed last pT bin in FF preselection 8 (after PhotonID meeting)
+	* FudgeMCTool-00-00-10
+
+2011-11-13  Martin Tripiana  <tripiana@cern.ch>	
+	* Added preselection 8 FF from Nancy
+	* FudgeMCTool-00-00-09 
+	
+2011-09-29  Martin Tripiana  <tripiana@cern.ch>
+	* Changed static const double GeV = 1.e+3; //to avoid clash with other tools.  
+	* FudgeMCTool-00-00-08
+	
+2011-08-18  Martin Tripiana  <tripiana@cern.ch>
+	* Fixed   SetPreselection() now update the current FF map (by calling LoadFFs() method) !!
+	* Fixed   initialization preselection=-1 in GetFFmap_XXX() 
+	* Fixed   initialization preselection=-1 in LoadFFs() 
+	* Fixed   initialization of preselection in LoadFFsDefault()  (called by constructor)
+	* Fixed   condition on preselection to update current set in GetFF_XX(), GetFFerr_XX() and Fudge_XX() methods.
+	* Fixed   condition on conversion flag to update current set in GetFF_XX(), GetFFerr_XX() and Fudge_XX() methods.
+	* Fixed   current preselection is now updated inside LoadFFs() method!
+	* Changed GetFFmap_XXX() return graph in GeV now.
+	* Changed WhichPreselection() --> GetPreselection()
+	* FudgeMCTool-00-00-07
+	
+2011-08-16  Martin Tripiana  <tripiana@cern.ch>
+	* Added GetFFmap_XXX() methods to get graphs with all FFs Vs pt (helpful for any attempt of extrapolation)
+	* Changed Conversion flag (m_conv) is now updated inside LoadFFs() to the value required.  It affects all future calls from other methods
+	* FudgeMCTool-00-00-06
+	
+2011-07-13  Martin Tripiana  <tripiana@cern.ch>
+	* Added ps=2 set, 2010 FFs after tightx+iso for method systematics.
+	* Added ps=3 set, 2010 FFs after tighty+iso for method systematics.
+	* Added ps=4 set, 2010 FFs after tight+iso from distorted geometry MC for material systematics.
+	* Added ps=5 set. 2011 FFs derived after isolation.   (Nansi Andari)
+	* Added ps=6 set. 2011 FFs derived without isolation. (Nansi Andari)
+	* FudgeMCTool-00-00-05
+
+2011-02-21  Martin Tripiana  <tripiana@cern.ch>
+	* Added Rel16 2010 FFs updated for preselections 0 (tight5+iso) and 1 (loose2+iso).
+	* FudgeMCTool-00-00-04
+
+2011-02-19  Martin Tripiana  <tripiana@cern.ch>
+	* New FF error methods. 
+	* New FF set (10) from tight preselection in rel15 (2010).
+	* FudgeMCTool-00-00-03
+
+2011-02-11  Martin Tripiana  <tripiana@cern.ch>
+	* Fixed some issues in PAUEffFF.C
+	* FudgeMCTool-00-00-02
+
+
+2011-02-11  Martin Tripiana  <tripiana@cern.ch>
+	* Fixed eta-crack FFs missing.
+	* FudgeMCTool-00-00-01
+	
+
+2011-02-11  Martin Tripiana  <tripiana@cern.ch>
+	* Initial import
+		

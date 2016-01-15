@@ -1,0 +1,12 @@
+if [ -z $SFRAME_DIR ]; then
+  echo 'Set up SFRAME environment first.'
+else 
+  cd $SFRAME_DIR/..
+  [ -d EnergyRescaler ] ||  svn co svn+ssh://svn.cern.ch/reps/atlasgrp/CombPerf/EGamma/Calibrations/EnergyRescalerTool/tags/EnergyRescalerTool-00-00-09  EnergyRescalerTool
+  grep EnergyRescalerTool $SFRAME_DIR/Makefile.common || sed -i 's#-I./#-I./ -I$(SFRAME_DIR)/../EnergyRescalerTool#' $SFRAME_DIR/Makefile.common
+  cd EnergyRescalerTool
+  make clean 
+  make 
+  cp $SFRAME_DIR/../EnergyRescalerTool/libEnergyRescalerTool.so $SFRAME_DIR/lib/libEnergyRescalerTool.so
+  cd $SFRAME_DIR/..
+fi

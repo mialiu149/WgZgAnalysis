@@ -1,0 +1,62 @@
+#!/bin/env bash
+
+adios() { echo This script failed!!!!; false; }
+[ ${0} == '-bash' ] || adios() { exit 1; }  
+
+if [ -z "${SFRAME_DIR}" ]; then
+  echo 'Set up SFRAME environment first.'
+  adios; return 1
+fi
+
+if [ -z "${ROOTSYS}" ]; then       
+    export ROOTSYS=$(root-config --prefix)     
+fi
+if [ -d ${ROOTSYS}/test/ ]; then
+    echo "Trying with ROOTSYS=$ROOTSYS"
+else
+    export ROOTSYS=$(root-config --prefix)/share/root 
+fi  
+if [ -d ${ROOTSYS} ]; then 
+    cd $SFRAME_DIR/..
+    export SFRAMEBASEDIR=${PWD}
+    if [ -d KLFitter ]; then
+	echo KLFitter already installed.
+    else
+	svn co svn+ssh://svn.cern.ch/reps/atlasgrp/Institutes/Goettingen/KLFitter/tags/KLFitter-00-04-24 KLFitter || { adios; return 1;}
+    fi
+    if [ -f  BAT-0.4.2.tar.gz ]; then 
+	echo BAT already downloaded.	
+    else
+       wget http://www.mppmu.mpg.de/bat/source/BAT-0.4.2.tar.gz || { adios; return 1; }
+    fi
+    if [ -d BAT-0.4.2 ]; then
+	rm -rf BAT-0.4.2
+    fi
+    tar -xzf BAT-0.4.2.tar.gz     
+    echo 'configuring with m32 flags since this ROOT version is going to want it.'
+    cd BAT-0.4.2  
+    ./configure CXXFLAGS=-m32 CFLAGS=-m32 --prefix=${SFRAMEBASEDIR}/BAT-0.4.2  || { adios; return 1; }
+    make  || { adios; return 1; }
+    make install || { adios; return 1; }    
+    cd ${SFRAMEBASEDIR}/BAT-0.4.2
+    cat <<EOF > setup.sh    
+if [ -z \${BATINSTALLDIR} ]; then
+  export BATINSTALLDIR=\${SFRAME_DIR}/../BAT-0.4.2                          
+  export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:\$BATINSTALLDIR/lib 
+  export CPATH=\$CPATH:\$BATINSTALLDIR/include
+  export CPLUS_INCLUDE_PATH=\$CPLUS_INCLUDE_PATH:\$BATINSTALLDIR/include
+fi
+
+EOF
+    cd $SFRAMEBASEDIR/KLFitter
+    echo "sourcing bat setup"
+    source ${SFRAMEBASEDIR}/BAT-0.4.2/setup.sh    
+    make clean
+    make || { adios; return 1; }
+    cp library/libKLFitter.so $SFRAME_DIR/lib/.
+    cd $SFRAME_DIR/..	
+else
+    echo 'Cannot figure out $ROOTSYS value.'
+    adios
+fi
+echo 'All ok.'

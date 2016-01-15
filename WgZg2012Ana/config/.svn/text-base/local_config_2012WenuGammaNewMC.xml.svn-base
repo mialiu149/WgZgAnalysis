@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE JobConfiguration PUBLIC "" "JobConfig.dtd"[
+  <!ENTITY input2012A SYSTEM "input_wgg_2012A.xml"> 
+  <!ENTITY input2012B SYSTEM "input_wgg_2012B.xml"> 
+  <!ENTITY input2012C SYSTEM "input_wgg_2012C.xml"> 
+  <!ENTITY input2012D SYSTEM "input_wgg_2012D.xml"> 
+  <!ENTITY input2012E SYSTEM "input_wgg_2012E.xml"> 
+  <!ENTITY input2012ATOE4 SYSTEM "input_wgg_2012A_E4.xml"> 
+]>
+
+<JobConfiguration JobName="ExampleJob" OutputLevel="INFO">
+  <Library Name="libSFramePlugIns" />
+  <Library Name="libCintex" />
+  <Library Name="libSFrameCintex" />
+  <Library Name="libGoodRunsLists" />
+  <Library Name="libPileupReweighting" />
+  <Library Name="libReweightUtils" />
+  <Library Name="libMuonEfficiencyCorrections" />
+  <Library Name="libMuonMomentumCorrections" />
+  <Library Name="libegammaAnalysisUtils" />
+  <Library Name="libegammaEvent" />
+  <Library Name="libPhotonIDTool" />
+  <Library Name="libTrigMuonEfficiency" />
+  <Library Name="libMuonIsolationCorrection" />
+  <Library Name="libFudgeMCTool" />
+  <Library Name="libApplyJetCalibration" />
+  <Library Name="libDukHep" />
+  <Library Name="libWgZg2012Ana"/>
+  <Package Name="SFrameCore.par" />
+  <Package Name="SFramePlugIns.par" />
+  <Package Name="SFrameCintex.par" />
+  <Package Name="RootCore.par" />
+  <Package Name="DukHep.par" />
+  <Package Name="WgZg2012Ana.par" />
+    <Cycle Name="WenugammaEventSelection" OutputDirectory="../SFrameOutputs/" PostFix="" TargetLumi="1.0" RunMode="LOCAL" ProofServer="lite://" ProofNodes="1" ProofWorkDir="/data/dukhep07/a/users/mliu/" UseTreeCache="False">
+	<InputData Lumi="0.0" NEventsMax="-1"  Type="MC" Version="Wgg0jet.cutflow">
+          <In FileName="/data/dukhep07/a/users/mliu/data/Wgg2012/MC/Wgg/Wgg0jet.root" Lumi="804" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<InputData Lumi="0.0" NEventsMax="-1"  Type="MC" Version="Wgg1jet.cutflow">
+          <In FileName="/data/dukhep07/a/users/mliu/data/Wgg2012/MC/Wgg/Wgg1jet.root" Lumi="804" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<InputData Lumi="0.0" NEventsMax="-1"  Type="MC" Version="Wgg2jet.cutflow">
+          <In FileName="/data/dukhep07/a/users/mliu/data/Wgg2012/MC/Wgg/user.mliu.mc12_8TeV.129822.AlpgenJimmy_AUET2_CTEQ6L1_WenugammagammaNp2.merge.NTUP_SMWZ.e1601_s1499_s1504_r3658_r3549_p1328.slim.v0.130213104445/user.mliu.007620._00001.DataEgammaSkim.data.0.root" Lumi="8e+04" />
+          <In FileName="/data/dukhep07/a/users/mliu/data/Wgg2012/MC/Wgg/user.mliu.mc12_8TeV.129822.AlpgenJimmy_AUET2_CTEQ6L1_WenugammagammaNp2.merge.NTUP_SMWZ.e1601_s1499_s1504_r3658_r3549_p1328.slim.v0.130213104445/user.mliu.007620._00002.DataEgammaSkim.data.0.root" Lumi="4e+04" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<InputData Lumi="0.0" NEventsMax="-1"  Type="MC" Version="mpiwgg.cutflow">
+          <In FileName="root://eosatlas.cern.ch//eos/atlas/user/m/mliu/MC12/SlimMPI/user.mliu.mc12_8TeV.147290.Pythia8_AU2CTEQ6L1_DPI_W_diphoton_1l2gm.merge.NTUP_SMWZ.e1720_s1581_s1586_r3658_r3549_p1328.wggslim.v0.130131191855/user.mliu.007596._00001.DataEgammaSkim.data.0.root" Lumi="804" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<UserConfig>
+	  <Item Name="GoodRunList" Value="GRL/data12_8TeV.periodAllYear_HEAD_CoolRunQuery-00-04-08_All_Good.xml" /> 
+	  <Item Name="IgnoreGRL" Value="false"/>
+	  <Item Name="FSRveto" Value="0"/>
+	  <Item Name="TriggerName1" Value="EF_e24vhi_medium1"/>
+	  <Item Name="TriggerName2" Value="EF_e60_medium1"/>
+	  <Item Name="nPVCut" Value="true"/>
+	  <Item Name="Trigger" Value="true"/>
+	  <Item Name="LeptonPt" Value="25000"/>
+	  <Item Name="LeptonCut" Value="true"/>
+	  <Item Name="LeptonVeto" Value="true"/>
+	  <Item Name="MetCut" Value="25000"/>
+	  <Item Name="MtCut" Value="40000"/>
+	  <Item Name="PhotonPt" Value="15000"/>
+	  <Item Name="PhotonIDCut" Value="true"/>
+	  <Item Name="dRLeptonGammaCut" Value="0.7"/>
+	  <Item Name="PhotonIsolation" Value="ph_Etcone30_pt_corrected"/>
+	  <Item Name="PhotonIsoValue" Value="3000"/>
+	</UserConfig>
+    </Cycle>
+</JobConfiguration>

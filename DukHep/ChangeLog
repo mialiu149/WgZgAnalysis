@@ -1,0 +1,18 @@
+2011-06-17  Ayana Arce  <atarce@atl008.phy.duke.edu>
+
+	* bin/GetGRL: Make errors more obvious (Travis's bug report)
+	* bin/dukhep_create_reader.py: Added a python class to implement Josh's idea (reader types)
+
+2011-06-07  Ayana Arce  <atarce@atl009.phy.duke.edu>
+
+	* Changes to scripts to run on OSX (different sed, and ROOT install location)
+
+2011-06-06  Ayana Arce  <atarce@atl009.phy.duke.edu>
+
+	* EleMacros.dat, WZMacros.dat: update for p547 (new jet collection names, vertex variables) 
+	* bin/GetEAU: update to compile egamma analysis utilities as a standalone sframe package.
+
+2011-06-02  Ayana Arce  <atarce@atl009.phy.duke.edu>
+
+	* include/DukHepFilter.h: added ratio calculator as used in isEmPlusPlus example
+

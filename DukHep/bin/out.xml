@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!DOCTYPE LumiRangeCollection SYSTEM "http://atlas-runquery.cern.ch/LumiRangeCollection.dtd">
+<!--This document is created by GoodRunsListWriter.-->
+<LumiRangeCollection>
+  <NamedLumiRange>
+    <Name>LumiBlocks_GoodDQ0</Name>
+    <Version>30</Version>
+    <Metadata Name="Description">luminosity_uniquegrlselector</Metadata>
+    <Metadata Name="TriggerName0">L1_EM14</Metadata>
+    <LumiBlockCollection>
+      <Run>180636</Run>
+      <LBRange Start="61" End="85"/>
+      <LBRange Start="93" End="124"/>
+      <LBRange Start="138" End="314"/>
+      <LBRange Start="323" End="475"/>
+      <LBRange Start="485" End="670"/>
+      <LBRange Start="680" End="775"/>
+      <LBRange Start="785" End="830"/>
+      <LBRange Start="841" End="864"/>
+      <LBRange Start="877" End="1016"/>
+    </LumiBlockCollection>
+  </NamedLumiRange>
+</LumiRangeCollection>

@@ -1,0 +1,32 @@
+#!/bin/bash
+# ----------
+# grid_run.sh : run sframe analysis on MC on the grid.
+# test-usage: grid_run.sh <filename>
+# prun usage: grid_run.sh %IN
+# Note: for data, please use grid_run_data.sh (does luminosity calculations)
+# ----------
+
+# You must set the name of your analysis directory here.
+AnaCycle=WgZg2012Ana
+# You must set the name of the D3PD in your datafiles here.
+Treename=physics
+
+# setup SFrame
+MyRunDir=${PWD}
+cd SFrame
+source setup.sh
+cd ..
+
+echo "SFrame $AnaCycle job running with input file arguments: $1"
+# create and print input xml file (use -r to deal with castor:// or xrootd:// or other storage systems.)
+if [[ $1 == *:/* ]]; then
+    sframe_input.py - -r -d -o ${AnaCycle}/config/input_grid.xml -t ${Treename} $1
+else
+    sframe_input.py - -d -o ${AnaCycle}/config/input_grid.xml -t ${Treename} $1
+fi
+
+# run SFrame
+sframe_main ${AnaCycle}/config/skim_wgg_mc.xml
+# run Luminosity Calculation
+#[ -e out.xml ] && rm out.xml
+#DukHep/bin/sLumiCalc.sh ${AnaCycle}/config/input_grid.xml

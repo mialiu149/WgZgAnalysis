@@ -1,0 +1,51 @@
+#!/usr/bin/env python
+# $Id: dukhep_create_cycle.py 126811 2013-01-15 20:25:36Z mliu $
+
+def main():
+  import sys
+  import os.path
+  import optparse
+  import dukheputils
+
+  # Print some welcome message before doing anything else:
+  print ">>"
+  print ">> %s : create analysis skeleton" % \
+        os.path.basename( sys.argv[ 0 ] )
+  print ">>"
+  print ""
+
+
+  # Parse the command line parameters:
+  parser = optparse.OptionParser( usage="%prog [options]" )
+  parser.add_option( "-c", "--classname", dest="classname", action="store",
+                     type="string", default="DukHepExample",
+                     help="Name of the cycle to create" )
+  ( options, args ) = parser.parse_args()
+
+  import os.path
+  outfile = options.classname
+  if os.path.exists( outfile+".cxx" ): 
+     print "Error: file exists:", outfile+".cxx"
+     sys.exit(1)
+     pass
+
+  if os.path.exists( outfile+".h" ): 
+     print "Error: file exists:", outfile+".h"
+     sys.exit(1)
+     pass
+  
+ 
+  f = open(outfile+".cxx","w")
+  f.write(dukheputils.cc(options.classname))
+  f.close()
+
+  f = open(outfile+".h","w")
+  f.write(dukheputils.hh(options.classname))
+  f.close()
+
+  pass
+
+# Call the main function:
+if __name__ == "__main__":
+  main()
+   

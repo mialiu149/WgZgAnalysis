@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE JobConfiguration PUBLIC "" "JobConfig.dtd"[
+  <!ENTITY datafiles SYSTEM "input_hzg2011_egamma.xml"> 
+]>
+
+<JobConfiguration JobName="ExampleJob" OutputLevel="INFO">
+  <Library Name="libSFramePlugIns" />
+  <Library Name="libCintex" />
+  <Library Name="libSFrameCintex" />
+  <Library Name="libGoodRunsLists" />
+  <Library Name="libPileupReweighting" />
+  <Library Name="libReweightUtils" />
+  <Library Name="libMuonEfficiencyCorrections" />
+  <Library Name="libMuonMomentumCorrections" />
+  <Library Name="libegammaAnalysisUtils" />
+  <Library Name="libegammaEvent" />
+  <Library Name="libPhotonIDTool" />
+  <Library Name="libTrigMuonEfficiency" />
+  <Library Name="libMuonIsolationCorrection" />
+  <Library Name="libFudgeMCTool" />
+  <Library Name="libDukHep" />
+  <Library Name="libMyFirstPackage"/>
+  <Package Name="SFrameCore.par" />
+  <Package Name="SFramePlugIns.par" />
+  <Package Name="SFrameCintex.par" />
+  <Package Name="RootCore.par" />
+  <Package Name="DukHep.par" />
+  <Package Name="MyFirstPackage.par" />
+    <Cycle Name="HzgCutFlowComparison" OutputDirectory="/data/dukhep07/a/users/mliu/OutPutSFrame/" PostFix="" TargetLumi="1.0" RunMode="PROOF" ProofServer="lite://" ProofNodes="8" ProofWorkDir="/data/dukhep07/a/users/mliu/" UseTreeCache="False">
+	<InputData Lumi="0.0" NEventsMax="-1" Type="MC" Version="0">
+	  &datafiles;
+	  <InputTree Name="physics" />
+	  <OutputTree Name="ZgCandidates" />
+	</InputData>
+	<UserConfig>
+	  <Item Name="GoodRunList" Value="/data/dukhep07/a/users/mliu/SFrameDuke_r17/GRL/data11_7TeV.periodAllYear_HEAD_CoolRunQuery-00-04-08_All_Good.xml" /> 
+	  <Item Name="IgnoreGRL" Value="false"/>
+	  <Item Name="TriggerName" Value="EF_e20_medium"/>
+	  <Item Name="nPVCut" Value="true"/>
+	  <Item Name="Trigger" Value="false"/>
+	  <Item Name="LeptonPt" Value="25000"/>
+	  <Item Name="LeptonCut" Value="true"/>
+	  <Item Name="LeptonOSCut" Value="true"/>
+	  <Item Name="ZmassCut1" Value="40000"/>
+	  <Item Name="ZmassCut2" Value="106000000"/>
+	  <Item Name="PhotonPt" Value="15000"/>
+	  <Item Name="PhotonIDCut" Value="true"/>
+	  <Item Name="dRLeptonGammaCut" Value="0.7"/>
+	  <Item Name="PhotonIsolation" Value="ph_Etcone30_corrected"/>
+	  <Item Name="PhotonIsoValue" Value="6000"/>
+	</UserConfig>
+    </Cycle>
+</JobConfiguration>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE JobConfiguration PUBLIC "" "JobConfig.dtd"[
+  <!ENTITY input2012A SYSTEM "input_wgg_2012A.xml"> 
+  <!ENTITY input2012B SYSTEM "input_wgg_2012B.xml"> 
+  <!ENTITY input2012C SYSTEM "input_wgg_2012C.xml"> 
+  <!ENTITY input2012D SYSTEM "input_wgg_2012D.xml"> 
+  <!ENTITY input2012E SYSTEM "input_wgg_2012E.xml"> 
+  <!ENTITY input2012G SYSTEM "input_wgg_2012G.xml"> 
+  <!ENTITY input2012H SYSTEM "input_wgg_2012H.xml"> 
+  <!ENTITY input2012I SYSTEM "input_wgg_2012I.xml"> 
+  <!ENTITY input2012J SYSTEM "input_wgg_2012J.xml"> 
+  <!ENTITY input2012K SYSTEM "input_wgg_2012K.xml"> 
+  <!ENTITY input2012L SYSTEM "input_wgg_2012L.xml"> 
+  <!ENTITY input2012 SYSTEM "input_grid.xml"> 
+]>
+
+<JobConfiguration JobName="ExampleJob" OutputLevel="INFO">
+  <Library Name="libSFramePlugIns" />
+  <Library Name="libCintex" />
+  <Library Name="libSFrameCintex" />
+  <Library Name="libGoodRunsLists" />
+  <Library Name="libPileupReweighting" />
+  <Library Name="libReweightUtils" />
+  <Library Name="libMuonEfficiencyCorrections" />
+  <Library Name="libMuonMomentumCorrections" />
+  <Library Name="libegammaAnalysisUtils" />
+  <Library Name="libegammaEvent" />
+  <Library Name="libTrigMuonEfficiency" />
+  <Library Name="libMuonIsolationCorrection" />
+  <Library Name="libApplyJetCalibration" />
+  <Library Name="libDukHep" />
+  <Library Name="libWgZg2012Ana"/>
+  <Package Name="SFrameCore.par" />
+  <Package Name="SFramePlugIns.par" />
+  <Package Name="SFrameCintex.par" />
+  <Package Name="RootCore.par" />
+  <Package Name="DukHep.par" />
+  <Package Name="WgZg2012Ana.par" />
+    <Cycle Name="WenugammaEventSelection" OutputDirectory="./" PostFix="" TargetLumi="1.0" RunMode="LOCAL" ProofServer="lite://" ProofNodes="1" ProofWorkDir="/afs/cern.ch/work/m/mliu/private/WgZgAnalysis/SFrameOutputs/" UseTreeCache="False">
+	<InputData Lumi="0.0" NEventsMax="-1" Type="MC" Version="v0">
+	   &input2012;
+	  <InputTree Name="physics" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<UserConfig>
+	  <Item Name="GoodRunList" Value="GRL/data12_8TeV.periodAllYear_HEAD_DQDefects-00-01-00_PHYS_StandardGRL_All_Good.xml" /> 
+	  <Item Name="IgnoreGRL" Value="false"/>
+	  <Item Name="BkgStudy" Value="true"/>
+	  <Item Name="FSRveto" Value="0"/>
+	  <Item Name="TriggerName1" Value="EF_e24vhi_medium1"/>
+	  <Item Name="TriggerName2" Value="EF_e60_medium1"/>
+	  <Item Name="nPVCut" Value="true"/>
+	  <Item Name="Trigger" Value="true"/>
+	  <Item Name="LeptonPt" Value="25000"/>
+	  <Item Name="LeptonCut" Value="true"/>
+	  <Item Name="LeptonVeto" Value="true"/>
+	  <Item Name="MetCut" Value="25000"/>
+	  <Item Name="MtCut" Value="40000"/>
+	  <Item Name="PhotonPt" Value="15000"/>
+	  <Item Name="PhotonIDCut" Value="true"/>
+	  <Item Name="dRLeptonGammaCut" Value="0.7"/>
+	  <Item Name="PhotonIsolation" Value="ph_Etcone30_pt_corrected"/>
+	  <Item Name="PhotonIsoValue" Value="4000"/>
+	</UserConfig>
+    </Cycle>
+</JobConfiguration>

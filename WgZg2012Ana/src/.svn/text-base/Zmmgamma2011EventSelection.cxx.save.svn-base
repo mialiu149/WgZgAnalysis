@@ -1,0 +1,269 @@
+// Local include(s):
+// $Id: Zmmgamma2011EventSelection.cxx 44735 2011-08-11 15:03:53Z mliu $
+#include "../include/Zmmgamma2011EventSelection.h"
+
+ClassImp( Zmmgamma2011EventSelection );
+
+Zmmgamma2011EventSelection::Zmmgamma2011EventSelection()
+  : DukHepFilter(), 
+    m_cutflow( "cutflow", this ),
+    Mucounter("elflow",this),
+    Phcounter("Phflow",this),
+    icutflow(0), h_cutflow(0),
+    h_Mucutflow(0),
+    h_Phcutflow(0),
+    mur(this,"mu_staco"),
+    phr(this),
+    jr(this,"jet_AntiKt4TopoEM"),
+    //Macro initializing the stl vectors that access the tree 
+    INIT_NULLS_CTOR
+{
+  //example job properties (sends data to your job via the xml file)
+  DeclareProperty( "IgnoreGRL", m_prop_skipgrl );
+  DeclareProperty( "TriggerName", m_prop_triggername );
+  DeclareProperty( "PhotonIsolation", m_prop_phisoname );
+  DeclareProperty( "nPVCut", m_nPVCut);
+  DeclareProperty( "Trigger",m_Trigger);
+  DeclareProperty( "LeptonPt",m_LeptonPt);
+  DeclareProperty( "LeptonCut",m_LeptonCut);
+  DeclareProperty( "LeptonOSCut",m_LeptonOSCut);
+  DeclareProperty( "ZmassCut1",m_ZmassCut1);
+  DeclareProperty( "ZmassCut2",m_ZmassCut2);
+  DeclareProperty( "PhotonPt",m_PhotonPt);
+  DeclareProperty( "PhotonIDCut",m_PhotonIDCut);
+  DeclareProperty( "dRLeptonGammaCut",m_dRLeptonGammaCut);
+  DeclareProperty( "PhotonIsoValue",m_PhotonIsoValue);
+  SetLogName( GetName() );
+}
+
+Zmmgamma2011EventSelection::~Zmmgamma2011EventSelection() {
+}
+
+void Zmmgamma2011EventSelection::BeginCycle() throw( SError ) {
+  DukHepFilter::setupGRL();  
+  return;
+}
+
+void Zmmgamma2011EventSelection::BeginInputData( const SInputData& ) throw( SError ) {
+  //say something
+  m_logger << DEBUG << "Hello from BeginInputData." << SLogger::endmsg;
+  //macro of commands to set up the output tree (delete if you don't want an output tree)
+  DECLARE("dummy")
+    ;
+  //do any needed initialization here.
+  m_cutflow->resize(11,0); 
+  Mucounter->resize(10,0); 
+  Phcounter->resize(7,0); 
+  h_cutflow = Book(TH1F("cf","Cut flow",11,-0.5,10.5 ));  
+  h_Mucutflow = Book(TH1F("cf_mu","mu Cut flow",11,-0.5,10.5 ));  
+  h_Phcutflow = Book(TH1F("cf_ph","ph Cut flow",11,-0.5,10.5 ));  
+  return;
+}
+
+void Zmmgamma2011EventSelection::BeginInputFile( const SInputData& inputData ) throw( SError ) {
+  int intype = STree::INPUT_TREE & STree::EVENT_TREE;
+  if  (! inputData.GetTrees(intype) ) {
+    m_logger << ERROR << "Zmmgamma2011EventSelection needs an input tree!" << SLogger::endmsg; 
+    throw SError( SError::SkipCycle );
+  } else if  (inputData.GetTrees(intype)->size() != 1) {
+    m_logger << ERROR << "Zmmgamma2011EventSelection got too many (" << inputData.GetTrees(intype)->size() 
+	     << ")input trees."  << SLogger::endmsg; 
+    throw SError( SError::SkipCycle );    
+  } else {
+    TString treename(inputData.GetTrees(intype)->at(0).treeName);
+    //macro of commands to read the input tree
+    CONNECT( treename.Data() )   
+      ;
+    //You might want to read some special branches for this analysis.  You can add them via
+    //ConnectVariable( treename.Data(), "branch_name", member_variable );
+    //This example allows you to change the trigger via the xml file
+    ConnectVariable( treename.Data(), m_prop_triggername.c_str(), m_LeptonTrigger  );
+    ConnectVariable( treename.Data(), m_prop_phisoname.c_str(), m_PhotonIsolation  );
+    er.ConnectVariables(treename.Data());
+    mur.ConnectVariables(treename.Data());
+    jr.ConnectVariables(treename.Data());
+  }
+  return;
+}
+
+///An example user function
+void Zmmgamma2011EventSelection::IncrementCutFlow() throw ( SError ) {
+  if (icutflow < m_cutflow->size())
+    ( *m_cutflow )[ icutflow ]++;
+  else 
+    m_logger << WARNING << "Resize your cut flow! " << SLogger::endmsg;
+  h_cutflow->Fill(icutflow++);
+}
+
+///Main analysis function: this is executed for every entry in the tree.
+void Zmmgamma2011EventSelection::ExecuteEvent( const SInputData &inputData, Double_t ) throw( SError ) {
+  icutflow=0;
+  //macro of commands to clear the output tree vectors. (delete if you don't want an output tree)
+  RESETVAR
+    ;  
+  // Start making cuts here.  When a cut is failed, throw a SkipEvent error.
+  m_logger << VERBOSE << "/** event passed all-events cut    **/" << SLogger::endmsg;
+  bool isdata = false;
+  IncrementCutFlow();
+  if( !( m_prop_skipgrl ) && (( inputData.GetType() == "data" ) || ( inputData.GetType() == "Data" ))) {
+      isdata = true;
+//      if ( ! testGRL(m_RunNumber,m_lbn) )  throw SError( SError::SkipEvent );
+  }
+  bool isMC = !isdata;
+  IncrementCutFlow();
+  m_logger << VERBOSE << "/** event passed goodrun cut   **/" << SLogger::endmsg;
+  //---------------------------------------------------------//
+  //------------------primary vertex cut---------------------//
+  //---------------------------------------------------------//
+  if(m_nPVCut){
+   if (m_vxp_n < 1 || m_vxp_nTracks->at(0)< 3) throw SError(SError::SkipEvent);
+  } 
+  IncrementCutFlow();
+  m_logger << VERBOSE << "/** event passed npv cut   **/" << SLogger::endmsg;
+  //---------------------------------------------------------//
+  //------------------------trigger--------------------------//
+  //---------------------------------------------------------//
+  if( m_Trigger&&! m_LeptonTrigger ) throw SError( SError::SkipEvent ); 
+  m_logger << VERBOSE << "/** event passed trigger cut   **/" << SLogger::endmsg;
+  IncrementCutFlow();
+  //---------------------------------------------------------//
+  //---------------------LArHole veto------------------------//
+  //---------------------------------------------------------//
+  bool m_LArHoleVeto = false;
+  if(m_LArHoleVeto){
+  bool LArHoleEvent = false;
+  if ((!isdata && (m_RunNumber == 183003)) || (isdata && (m_RunNumber >=180614) && (m_RunNumber <185352)))
+  for (int i = 0; i<jr.m_NumJets; i++)
+  if (LArHole::simpleVeto(jr.m_JetPt->at(i), jr.m_JetEta->at(i), jr.m_JetPhi->at(i),
+  jr.m_JetBCH_CORR_JET->at(i), jr.m_JetBCH_CORR_CELL->at(i), 25000.))
+  {LArHoleEvent = true; break; }
+  if(LArHoleEvent) throw SError(SError::SkipEvent);
+  }
+  IncrementCutFlow();
+  m_logger << VERBOSE << "/** event passed LAr cleaning   **/" << SLogger::endmsg;
+  
+  //---------------------------------------------------------//
+  // Counting both good tight and good loose electrons//
+  //---------------------------------------------------------//
+
+  int TightMuonCount = 0;
+  int MediumMuonCount = 0;
+  float ElIso = 0;
+  std::vector<int> TightElectronIndex;
+  std::vector<int> MediumElectronIndex;
+  std::vector<TLorentzVector> SelectedEls;
+
+  int npv = 0;
+  for(int i = 0;i<m_vxp_n;i++)
+  {
+  if(m_vxp_nTracks->at(i) >=2 ) npv++; 
+  } 
+  m_logger << VERBOSE << "/** Start looping **/" << SLogger::endmsg;
+
+  for (int i = 0; i<er.m_NumMuons;i++)
+  {
+  TLorentzVector tmp;
+  m_logger << VERBOSE << "/** Start selection **/" << SLogger::endmsg;
+  bool TightMuon = mr.IsGoodMuon_EWK(m_vxp_n,i,25000,Mucounter); 
+  m_logger << VERBOSE << "/** Tight Electron selected **/" << SLogger::endmsg;
+  bool MediumElectron = er.IsGoodElectronEWKZ(isMC,npv,i,m_LeptonPt,m_EventNumber,ElIso); 
+  m_logger << VERBOSE << "/** Loose Electron selected **/" << SLogger::endmsg;
+  if(TightElectron) {TightElectronCount++;TightElectronIndex.push_back(i);}
+  if(MediumElectron){
+  MediumElectronCount++;
+  MediumElectronIndex.push_back(i);
+  er.FillElectronFourMomentum(i,isMC,tmp,m_EventNumber);
+  SelectedEls.push_back(tmp);
+   }  
+  }
+  //---------------------------------------------------------//
+  // electron selection, at least two good electron with pt>20GeV//
+  //---------------------------------------------------------//
+  if(m_LeptonCut&&MediumElectronCount < 2) throw SError(SError::SkipEvent);
+  m_logger << VERBOSE << "/** event passed 2 Good Electron cut   **/" << SLogger::endmsg;
+  IncrementCutFlow();
+  //--sort medium electrons in pt-------------------------------//
+  int LeadingElectron;
+  int SLeadingElectron;
+  LeadingElectron = AnalysisUtils::LeadingPtParticle(SelectedEls);
+  m_logger << VERBOSE << "/** found leading electron **/" << SLogger::endmsg;
+  int LeadingElectronIndex = MediumElectronIndex.at(LeadingElectron);
+  m_logger << VERBOSE << "/** found leading electron index **/" << SLogger::endmsg;
+  SelectedEls.erase(SelectedEls.begin()+LeadingElectron);
+  SLeadingElectron = AnalysisUtils::LeadingPtParticle(SelectedEls);
+  m_logger << VERBOSE << "/** found subleading electron **/" << SLogger::endmsg;
+  int SLeadingElectronIndex = MediumElectronIndex.at(SLeadingElectron);
+  m_logger << VERBOSE << "/** found subleading electron index **/" << SLogger::endmsg;
+  //---------------------------------------------------------//
+  //charge
+  //---------------------------------------------------------//
+  //if(m_LeptonOSCut&&(er.m_ElectronCharge->at(LeadingElectronIndex)==er.m_ElectronCharge->at(SLeadingElectronIndex))) throw SError(SError::SkipEvent);
+  m_logger << VERBOSE << "/** event passed two opposite signed electrons cut   **/" << SLogger::endmsg;
+  IncrementCutFlow();
+  //---- Z Mass cut---------//
+  TLorentzVector elv1;
+  TLorentzVector elv2;
+
+  er.FillElectronFourMomentum(LeadingElectronIndex,isMC,elv1,m_EventNumber);
+  er.FillElectronFourMomentum(SLeadingElectronIndex,isMC,elv2,m_EventNumber);
+
+  float Zmass = (elv1+elv2).M();  
+  if(Zmass>m_ZmassCut2||Zmass<m_ZmassCut1) throw SError(SError::SkipEvent);
+  IncrementCutFlow();
+  m_logger << VERBOSE << "/** event passed Z mass cut   **/" << SLogger::endmsg;
+  //Photon selection
+  int GoodPhotonCount = 0;
+  std::vector<int> GoodPhotonIndex;
+  std::vector<TLorentzVector> SelectedPhs;
+  for(int i = 0;i < phr.m_NumPhotons;i++)
+  {
+   TLorentzVector tmp;  
+  tmp.SetPtEtaPhiE(phr.m_PhotonClusterPt->at(i),phr.m_PhotonClusterEta->at(i),phr.m_PhotonClusterPhi->at(i),phr.m_PhotonClusterE->at(i));
+  float dr1 = elv1.DeltaR(tmp);
+  float dr2 = elv2.DeltaR(tmp);
+  
+  if(phr.IsGoodPhoton(isMC,i,m_PhotonPt,Phcounter,m_EventNumber)&&dr1 > m_dRLeptonGammaCut && dr2 > m_dRLeptonGammaCut) 
+  //if(dr1 > m_dRLeptonGammaCut && dr2 > m_dRLeptonGammaCut) 
+ {
+  GoodPhotonCount++;
+  GoodPhotonIndex.push_back(i);
+  SelectedPhs.push_back(tmp); 
+}  
+  
+}
+  if(m_PhotonIDCut&&GoodPhotonCount == 0) throw SError(SError::SkipEvent);
+  IncrementCutFlow();
+  // find leading pt photon
+  int leadingPtPhoton = AnalysisUtils::LeadingPtParticle(SelectedPhs);
+  TLorentzVector ph_lv;
+  int The_ph = GoodPhotonIndex.at(leadingPtPhoton);
+  //check if leading pt photon is isolated
+  vector<float> ptandiso = phr.CorrectedPtAndIso(isMC,The_ph,m_EventNumber);
+  if(ptandiso.at(1) > m_PhotonIsoValue) throw SError(SError::SkipEvent);
+  IncrementCutFlow();
+  ph_lv.SetPtEtaPhiE(phr.m_PhotonClusterPt->at(The_ph),phr.m_PhotonClusterEta->at(The_ph),phr.m_PhotonClusterPhi->at(The_ph),phr.m_PhotonClusterE->at(The_ph));
+
+//  COPYVAR
+//    ;  
+  return;
+}
+
+
+void Zmmgamma2011EventSelection::EndMasterInputData( const SInputData& ) throw( SError ) {
+  m_logger << INFO << "End of input data." << SLogger::endmsg;
+  if ( m_cutflow->size() ==11 ) {
+    m_logger << INFO << "(C0)  Number of input events:                       " << ( *m_cutflow )[ 0 ] <<"  Cut Efficiency: "<<( *m_cutflow )[ 0 ]/( *m_cutflow )[ 0 ]<<SLogger::endmsg;
+    m_logger << INFO << "(C1)  Number of events passing goodrun flag:        " << ( *m_cutflow )[ 1 ] <<"  Cut Efficiency: "<<( *m_cutflow )[ 1 ]/( *m_cutflow )[ 0 ]<<SLogger::endmsg;
+    m_logger << INFO << "(C2)  Number of events passing primary vertex:      " << ( *m_cutflow )[ 2 ] <<"  Cut Efficiency: "<<( *m_cutflow )[ 2 ]/( *m_cutflow )[ 1 ]<< SLogger::endmsg;
+    m_logger << INFO << "(C3)  Number of events passing trigger              " << ( *m_cutflow )[ 3 ] <<"  Cut Efficiency: "<<( *m_cutflow )[ 3 ]/( *m_cutflow )[ 2 ]<< SLogger::endmsg;
+    m_logger << INFO << "(C4)  Number of events passing LArHole veto         " << ( *m_cutflow )[ 4 ] <<"  Cut Efficiency: "<<( *m_cutflow )[ 4 ]/( *m_cutflow )[ 3 ]<< SLogger::endmsg;
+    m_logger << INFO << "(C5)  Number of events passing lepton selection:    " << ( *m_cutflow )[ 5 ] <<"  Cut Efficiency: "<<( *m_cutflow )[ 5 ]/( *m_cutflow )[ 4 ]<< SLogger::endmsg;
+    m_logger << INFO << "(C6)  Number of events passing opposite sign el:    " << ( *m_cutflow )[ 6 ] <<"  Cut Efficiency: "<<( *m_cutflow )[ 6 ]/( *m_cutflow )[ 5 ]<< SLogger::endmsg;
+    m_logger << INFO << "(C7)  Number of events passing Z mass cut:          " << ( *m_cutflow )[ 7 ] <<"  Cut Efficiency: "<<( *m_cutflow )[ 7 ]/( *m_cutflow )[ 6 ]<< SLogger::endmsg;
+    m_logger << INFO << "(C8)  Number of events passing photon ID cut:       " << ( *m_cutflow )[ 8 ] <<"  Cut Efficiency: "<<( *m_cutflow )[ 8 ]/( *m_cutflow )[ 7 ]<< SLogger::endmsg;
+    m_logger << INFO << "(C9)  Number of events passing photon isolation cut:" << ( *m_cutflow )[ 9 ] <<"  Cut Efficiency: "<<( *m_cutflow )[ 9 ]/( *m_cutflow )[ 8 ]<< SLogger::endmsg;
+  } else {
+    m_logger << WARNING << "It looks like your job didn't run." << SLogger::endmsg;
+  }
+   return;
+}

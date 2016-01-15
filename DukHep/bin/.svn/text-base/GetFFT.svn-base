@@ -1,0 +1,12 @@
+if [ -z $SFRAME_DIR ]; then
+  echo 'Set up SFRAME environment first.'
+else 
+  cd $SFRAME_DIR/..
+  [ -d FudgeMCTool ] || svn co svn+ssh://svn.cern.ch/reps/atlasgrp/Physics/StandardModel/PromptPhotons/FudgeMCTool/tags/FudgeMCTool-00-00-10/ FudgeMCTool
+  grep FudgeMCTool $SFRAME_DIR/Makefile.common || sed -i 's#-I./#-I./ -I$(SFRAME_DIR)/../FudgeMCTool#' $SFRAME_DIR/Makefile.common
+  cd FudgeMCTool
+  make clean 
+  make 
+  cp $SFRAME_DIR/../FudgeMCTool/libFudgeMCTool.so $SFRAME_DIR/lib/libFudgeMCTool.so
+  cd $SFRAME_DIR/..
+fi

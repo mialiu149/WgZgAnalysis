@@ -1,0 +1,12 @@
+if [ -z $SFRAME_DIR ]; then
+  echo 'Set up SFRAME environment first.'
+else 
+  cd $SFRAME_DIR/..
+  [ -d PhotonIDTool ] || svn co svn+ssh://svn.cern.ch/reps/atlasgrp/Physics/StandardModel/PromptPhotons/PhotonIDTool/trunk/ PhotonIDTool
+  grep PhotonIDTool $SFRAME_DIR/Makefile.common || sed -i 's#-I./#-I./ -I$(SFRAME_DIR)/../PhotonIDTool#' $SFRAME_DIR/Makefile.common
+  cd PhotonIDTool
+  make clean 
+  make 
+  cp $SFRAME_DIR/../PhotonIDTool/libPhotonIDTool.so $SFRAME_DIR/lib/libPhotonIDTool.so
+  cd $SFRAME_DIR/..
+fi

@@ -1,0 +1,85 @@
+<InputData Lumi="" NEventsMax="-1" Type="MC" Version="147774.alljets">
+  <In FileName="/data/dukhep07/a/users/mliu/data/MC12/AnalysisNtuple/147774.root" Lumi="1.23e+03" />
+  <InputTree Name="WgCandidates" />
+  <OutputTree Name="WgCandidates" />
+</InputData>
+<InputData Lumi="" NEventsMax="-1" Type="MC" Version="146434.alljets">
+  <In FileName="/data/dukhep07/a/users/mliu/data/MC12/AnalysisNtuple/146434.root" Lumi="1.5e+05" />
+  <InputTree Name="WgCandidates" />
+  <OutputTree Name="WgCandidates" />
+</InputData>
+<InputData Lumi="" NEventsMax="-1" Type="MC" Version="146435.alljets">
+  <In FileName="/data/dukhep07/a/users/mliu/data/MC12/AnalysisNtuple/146435.root" Lumi="1.12e+05" />
+  <InputTree Name="WgCandidates" />
+  <OutputTree Name="WgCandidates" />
+</InputData>
+<InputData Lumi="" NEventsMax="-1" Type="MC" Version="146436.alljets">
+  <In FileName="/data/dukhep07/a/users/mliu/data/MC12/AnalysisNtuple/146436.root" Lumi="1.7e+04" />
+  <InputTree Name="WgCandidates" />
+  <OutputTree Name="WgCandidates" />
+</InputData>
+<InputData Lumi="" NEventsMax="-1" Type="MC" Version="146437.alljets">
+  <In FileName="/data/dukhep07/a/users/mliu/data/MC12/AnalysisNtuple/146437.root" Lumi="3.54e+04" />
+  <InputTree Name="WgCandidates" />
+  <OutputTree Name="WgCandidates" />
+</InputData>
+<InputData Lumi="" NEventsMax="-1" Type="MC" Version="146438.alljets">
+  <In FileName="/data/dukhep07/a/users/mliu/data/MC12/AnalysisNtuple/146438.root" Lumi="6.42e+04" />
+  <InputTree Name="WgCandidates" />
+  <OutputTree Name="WgCandidates" />
+</InputData>
+<InputData Lumi="" NEventsMax="-1" Type="MC" Version="146439.alljets">
+  <In FileName="/data/dukhep07/a/users/mliu/data/MC12/AnalysisNtuple/146439.root" Lumi="6.61e+04" />
+  <InputTree Name="WgCandidates" />
+  <OutputTree Name="WgCandidates" />
+</InputData>
+<InputData Lumi="" NEventsMax="-1" Type="MC" Version="126739.alljets">
+  <In FileName="/data/dukhep07/a/users/mliu/data/MC12/AnalysisNtuple/126739.root" Lumi="5.71e+04" />
+  <InputTree Name="WgCandidates" />
+  <OutputTree Name="WgCandidates" />
+</InputData>
+<InputData Lumi="" NEventsMax="-1" Type="MC" Version="129171.alljets">
+  <In FileName="/data/dukhep07/a/users/mliu/data/MC12/AnalysisNtuple/129171.root" Lumi="2.06e-05" />
+  <InputTree Name="WgCandidates" />
+  <OutputTree Name="WgCandidates" />
+</InputData>
+<InputData Lumi="" NEventsMax="-1" Type="MC" Version="129172.alljets">
+  <In FileName="/data/dukhep07/a/users/mliu/data/MC12/AnalysisNtuple/129172.root" Lumi="0.0005" />
+  <InputTree Name="WgCandidates" />
+  <OutputTree Name="WgCandidates" />
+</InputData>
+<InputData Lumi="" NEventsMax="-1" Type="MC" Version="129173.alljets">
+  <In FileName="/data/dukhep07/a/users/mliu/data/MC12/AnalysisNtuple/129173.root" Lumi="7.93e-05" />
+  <InputTree Name="WgCandidates" />
+  <OutputTree Name="WgCandidates" />
+</InputData>
+<InputData Lumi="" NEventsMax="-1" Type="MC" Version="107680.alljets">
+  <In FileName="/data/dukhep07/a/users/mliu/data/MC12/AnalysisNtuple/107680.root" Lumi="309" />
+  <InputTree Name="WgCandidates" />
+  <OutputTree Name="WgCandidates" />
+</InputData>
+<InputData Lumi="" NEventsMax="-1" Type="MC" Version="107681.alljets">
+  <In FileName="/data/dukhep07/a/users/mliu/data/MC12/AnalysisNtuple/107681.root" Lumi="1.22e+03" />
+  <InputTree Name="WgCandidates" />
+  <OutputTree Name="WgCandidates" />
+</InputData>
+<InputData Lumi="" NEventsMax="-1" Type="MC" Version="107682.alljets">
+  <In FileName="/data/dukhep07/a/users/mliu/data/MC12/AnalysisNtuple/107682.root" Lumi="6.64e+03" />
+  <InputTree Name="WgCandidates" />
+  <OutputTree Name="WgCandidates" />
+</InputData>
+<InputData Lumi="" NEventsMax="-1" Type="MC" Version="107683.alljets">
+  <In FileName="/data/dukhep07/a/users/mliu/data/MC12/AnalysisNtuple/107683.root" Lumi="314" />
+  <InputTree Name="WgCandidates" />
+  <OutputTree Name="WgCandidates" />
+</InputData>
+<InputData Lumi="" NEventsMax="-1" Type="MC" Version="107684.alljets">
+  <In FileName="/data/dukhep07/a/users/mliu/data/MC12/AnalysisNtuple/107684.root" Lumi="5.43e+03" />
+  <InputTree Name="WgCandidates" />
+  <OutputTree Name="WgCandidates" />
+</InputData>
+<InputData Lumi="" NEventsMax="-1" Type="MC" Version="107685.alljets">
+  <In FileName="/data/dukhep07/a/users/mliu/data/MC12/AnalysisNtuple/107685.root" Lumi="4.78e+03" />
+  <InputTree Name="WgCandidates" />
+  <OutputTree Name="WgCandidates" />
+</InputData>

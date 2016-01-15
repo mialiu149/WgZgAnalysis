@@ -1,0 +1,35 @@
+<InputData Lumi="" NEventsMax="-1" Type="MC" Version="147770.VeryTight">
+  <In FileName="root://eosatlas.cern.ch//eos/atlas/user/m/mliu/Wg/AnalysisNtuple/MC12/147770.root" Lumi="2.01e+04" />
+  <InputTree Name="WgCandidates" />
+  <OutputTree Name="CollectionTree" />
+</InputData>
+<InputData Lumi="" NEventsMax="-1" Type="MC" Version="107650.VeryTight">
+  <In FileName="root://eosatlas.cern.ch//eos/atlas/user/m/mliu/Wg/AnalysisNtuple/MC12/107650.root" Lumi="7.55e+03" />
+  <InputTree Name="WgCandidates" />
+  <OutputTree Name="CollectionTree" />
+</InputData>
+<InputData Lumi="" NEventsMax="-1" Type="MC" Version="107651.VeryTight">
+  <In FileName="root://eosatlas.cern.ch//eos/atlas/user/m/mliu/Wg/AnalysisNtuple/MC12/107651.root" Lumi="6.99e+03" />
+  <InputTree Name="WgCandidates" />
+  <OutputTree Name="CollectionTree" />
+</InputData>
+<InputData Lumi="" NEventsMax="-1" Type="MC" Version="107652.VeryTight">
+  <In FileName="root://eosatlas.cern.ch//eos/atlas/user/m/mliu/Wg/AnalysisNtuple/MC12/107652.root" Lumi="6.75e+03" />
+  <InputTree Name="WgCandidates" />
+  <OutputTree Name="CollectionTree" />
+</InputData>
+<InputData Lumi="" NEventsMax="-1" Type="MC" Version="107653.VeryTight">
+  <In FileName="root://eosatlas.cern.ch//eos/atlas/user/m/mliu/Wg/AnalysisNtuple/MC12/107653.root" Lumi="6.29e+03" />
+  <InputTree Name="WgCandidates" />
+  <OutputTree Name="CollectionTree" />
+</InputData>
+<InputData Lumi="" NEventsMax="-1" Type="MC" Version="107654.VeryTight">
+  <In FileName="root://eosatlas.cern.ch//eos/atlas/user/m/mliu/Wg/AnalysisNtuple/MC12/107654.root" Lumi="6.49e+03" />
+  <InputTree Name="WgCandidates" />
+  <OutputTree Name="CollectionTree" />
+</InputData>
+<InputData Lumi="" NEventsMax="-1" Type="MC" Version="107655.VeryTight">
+  <In FileName="root://eosatlas.cern.ch//eos/atlas/user/m/mliu/Wg/AnalysisNtuple/MC12/107655.root" Lumi="7.43e+03" />
+  <InputTree Name="WgCandidates" />
+  <OutputTree Name="CollectionTree" />
+</InputData>

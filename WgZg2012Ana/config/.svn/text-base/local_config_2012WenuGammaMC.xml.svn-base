@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE JobConfiguration PUBLIC "" "JobConfig.dtd"[
+  <!ENTITY data11PeriodB SYSTEM "inputs_save/input_data11ZeeSkimPeriodB.xml"> 
+  <!ENTITY data11PeriodD SYSTEM "inputs_save/input_data11ZeeSkimPeriodD.xml"> 
+  <!ENTITY data11PeriodE SYSTEM "inputs_save/input_data11ZeeSkimPeriodE.xml"> 
+  <!ENTITY data11PeriodF SYSTEM "inputs_save/input_data11ZeeSkimPeriodF.xml"> 
+  <!ENTITY data11PeriodG SYSTEM "inputs_save/input_data11ZeeSkimPeriodG.xml"> 
+  <!ENTITY data11PeriodH SYSTEM "inputs_save/input_data11ZeeSkimPeriodH.xml"> 
+  <!ENTITY data11PeriodI SYSTEM "inputs_save/input_data11ZeeSkimPeriodI.xml"> 
+  <!ENTITY data11PeriodJ SYSTEM "inputs_save/input_data11ZeeSkimPeriodJ.xml"> 
+  <!ENTITY data11PeriodK SYSTEM "inputs_save/input_data11ZeeSkimPeriodK.xml"> 
+  <!ENTITY data11PeriodL SYSTEM "inputs_save/input_data11ZeeSkimPeriodL.xml"> 
+  <!ENTITY data11PeriodM SYSTEM "inputs_save/input_data11ZeeSkimPeriodM.xml"> 
+  <!ENTITY input200967 SYSTEM "inputs_save/input_wenu_cutflow.xml"> 
+  <!ENTITY input2012A SYSTEM "input_wgg_2012A.xml"> 
+  <!ENTITY input2012B SYSTEM "input_wgg_2012B.xml"> 
+  <!ENTITY input2012C SYSTEM "input_wgg_2012C.xml"> 
+  <!ENTITY input2012D SYSTEM "input_wgg_2012D.xml"> 
+  <!ENTITY input2012E SYSTEM "input_wgg_2012E.xml"> 
+  <!ENTITY input2012ATOE4 SYSTEM "input_wgg_2012A_E4.xml"> 
+]>
+
+<JobConfiguration JobName="ExampleJob" OutputLevel="INFO">
+  <Library Name="libSFramePlugIns" />
+  <Library Name="libCintex" />
+  <Library Name="libSFrameCintex" />
+  <Library Name="libGoodRunsLists" />
+  <Library Name="libPileupReweighting" />
+  <Library Name="libReweightUtils" />
+  <Library Name="libMuonEfficiencyCorrections" />
+  <Library Name="libMuonMomentumCorrections" />
+  <Library Name="libegammaAnalysisUtils" />
+  <Library Name="libegammaEvent" />
+  <Library Name="libPhotonIDTool" />
+  <Library Name="libTrigMuonEfficiency" />
+  <Library Name="libMuonIsolationCorrection" />
+  <Library Name="libFudgeMCTool" />
+  <Library Name="libApplyJetCalibration" />
+  <Library Name="libDukHep" />
+  <Library Name="libWgZg2012Ana"/>
+  <Package Name="SFrameCore.par" />
+  <Package Name="SFramePlugIns.par" />
+  <Package Name="SFrameCintex.par" />
+  <Package Name="RootCore.par" />
+  <Package Name="DukHep.par" />
+  <Package Name="WgZg2012Ana.par" />
+    <Cycle Name="WenugammaEventSelection" OutputDirectory="../SFrameOutputs/" PostFix="" TargetLumi="1.0" RunMode="LOCAL" ProofServer="lite://" ProofNodes="1" ProofWorkDir="/data/dukhep07/a/users/mliu/" UseTreeCache="False">
+	<InputData Lumi="0.0" NEventsMax="-1" Type="MC" Version="Wenu0jet.tightiso">
+          <In FileName="/data/dukhep07/a/users/mliu/data/Wgg2012/MC/WenuJets/Wenu0jet.root" Lumi="804" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<InputData Lumi="0.0" NEventsMax="-1" Type="MC" Version="Wenu1jet.tightiso">
+          <In FileName="/data/dukhep07/a/users/mliu/data/Wgg2012/MC/WenuJets/Wenu1jet.root" Lumi="804" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<InputData Lumi="0.0" NEventsMax="-1" Type="MC" Version="Wenu2jet.tightiso">
+          <In FileName="/data/dukhep07/a/users/mliu/data/Wgg2012/MC/WenuJets/Wenu2jet.root" Lumi="804" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<InputData Lumi="0.0" NEventsMax="-1" Type="MC" Version="Wenu3jet.tightiso">
+          <In FileName="/data/dukhep07/a/users/mliu/data/Wgg2012/MC/WenuJets/Wenu3jet.root" Lumi="804" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<InputData Lumi="0.0" NEventsMax="-1" Type="MC" Version="Wenu4jet.tightiso">
+          <In FileName="/data/dukhep07/a/users/mliu/data/Wgg2012/MC/WenuJets/Wenu4jet.root" Lumi="804" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<InputData Lumi="0.0" NEventsMax="-1" Type="MC" Version="Wenu5jet.tightiso">
+          <In FileName="/data/dukhep07/a/users/mliu/data/Wgg2012/MC/WenuJets/Wenu5jet.root" Lumi="804" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<InputData Lumi="0.0" NEventsMax="-1" Type="MC" Version="Zee0jet.pythia.tightiso">
+          <In FileName="/data/dukhep07/a/users/mliu/data/Wgg2012/MC/ZeeJets/AlpgenPythia/Zee0jet.root" Lumi="1.11e+04" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<InputData Lumi="0.0" NEventsMax="-1" Type="MC" Version="Zee1jet.pythia.tightiso">
+          <In FileName="/data/dukhep07/a/users/mliu/data/Wgg2012/MC/ZeeJets/AlpgenPythia/Zee1jet.root" Lumi="1.11e+04" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<InputData Lumi="0.0" NEventsMax="-1" Type="MC" Version="Zee2jet.pythia.tightiso">
+          <In FileName="/data/dukhep07/a/users/mliu/data/Wgg2012/MC/ZeeJets/AlpgenPythia/Zee2jet.root" Lumi="1.11e+04" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<InputData Lumi="0.0" NEventsMax="-1" Type="MC" Version="Zee3jet.pythia.tightiso">
+          <In FileName="/data/dukhep07/a/users/mliu/data/Wgg2012/MC/ZeeJets/AlpgenPythia/Zee3jet.root" Lumi="1.11e+04" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<InputData Lumi="0.0" NEventsMax="-1" Type="MC" Version="Zee4jet.pythia.tightiso">
+          <In FileName="/data/dukhep07/a/users/mliu/data/Wgg2012/MC/ZeeJets/AlpgenPythia/Zee4jet.root" Lumi="1.11e+04" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<InputData Lumi="0.0" NEventsMax="-1" Type="MC" Version="Zee5jet.pythia.tightiso">
+          <In FileName="/data/dukhep07/a/users/mliu/data/Wgg2012/MC/ZeeJets/AlpgenPythia/Zee5jet.root" Lumi="1.11e+04" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<InputData Lumi="0.0" NEventsMax="-1" Type="MC" Version="Zee0jet.jimmy.tightiso">
+          <In FileName="/data/dukhep07/a/users/mliu/data/Wgg2012/MC/ZeeJets/AlpgenJimmy/Zee0jet.root" Lumi="1.11e+04" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<InputData Lumi="0.0" NEventsMax="-1" Type="MC" Version="Zee1jet.jimmy.tightiso">
+          <In FileName="/data/dukhep07/a/users/mliu/data/Wgg2012/MC/ZeeJets/AlpgenJimmy/Zee1jet.root" Lumi="1.11e+04" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<InputData Lumi="0.0" NEventsMax="-1" Type="MC" Version="Zee2jet.jimmy.tightiso">
+          <In FileName="/data/dukhep07/a/users/mliu/data/Wgg2012/MC/ZeeJets/AlpgenJimmy/Zee2jet.root" Lumi="1.11e+04" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<InputData Lumi="0.0" NEventsMax="-1" Type="MC" Version="Zee3jet.jimmy.tightiso">
+          <In FileName="/data/dukhep07/a/users/mliu/data/Wgg2012/MC/ZeeJets/AlpgenJimmy/Zee3jet.root" Lumi="1.11e+04" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<InputData Lumi="0.0" NEventsMax="-1" Type="MC" Version="Zee4jet.jimmy.tightiso">
+          <In FileName="/data/dukhep07/a/users/mliu/data/Wgg2012/MC/ZeeJets/AlpgenJimmy/Zee4jet.root" Lumi="1.11e+04" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<InputData Lumi="0.0" NEventsMax="-1" Type="MC" Version="Zee5jet.jimmy.tightiso">
+          <In FileName="/data/dukhep07/a/users/mliu/data/Wgg2012/MC/ZeeJets/AlpgenJimmy/Zee5jet.root" Lumi="1.11e+04" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<UserConfig>
+	  <Item Name="GoodRunList" Value="GRL/data12_8TeV.periodAllYear_HEAD_CoolRunQuery-00-04-08_All_Good.xml" /> 
+	  <Item Name="IgnoreGRL" Value="false"/>
+	  <Item Name="FSRveto" Value="1"/>
+	  <Item Name="TriggerName1" Value="EF_e24vhi_medium1"/>
+	  <Item Name="TriggerName2" Value="EF_e60_medium1"/>
+	  <Item Name="nPVCut" Value="true"/>
+	  <Item Name="Trigger" Value="true"/>
+	  <Item Name="LeptonPt" Value="25000"/>
+	  <Item Name="LeptonCut" Value="true"/>
+	  <Item Name="LeptonVeto" Value="true"/>
+	  <Item Name="MetCut" Value="25000"/>
+	  <Item Name="MtCut" Value="40000"/>
+	  <Item Name="PhotonPt" Value="15000"/>
+	  <Item Name="PhotonIDCut" Value="true"/>
+	  <Item Name="dRLeptonGammaCut" Value="0.7"/>
+	  <Item Name="PhotonIsolation" Value="ph_Etcone30_pt_corrected"/>
+	  <Item Name="PhotonIsoValue" Value="3000"/>
+	</UserConfig>
+    </Cycle>
+    <Cycle Name="WenugammaEventSelection" OutputDirectory="../SFrameOutputs/" PostFix="" TargetLumi="1.0" RunMode="LOCAL" ProofServer="lite://" ProofNodes="1" ProofWorkDir="/data/dukhep07/a/users/mliu/" UseTreeCache="False">
+	<InputData Lumi="0.0" NEventsMax="-1"  Type="MC" Version="Wgg0jet.tightiso">
+          <In FileName="/data/dukhep07/a/users/mliu/data/Wgg2012/MC/Wgg/Wgg0jet.root" Lumi="804" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<InputData Lumi="0.0" NEventsMax="-1"  Type="MC" Version="Wgg1jet.tightiso">
+          <In FileName="/data/dukhep07/a/users/mliu/data/Wgg2012/MC/Wgg/Wgg1jet.root" Lumi="804" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<InputData Lumi="0.0" NEventsMax="-1"  Type="MC" Version="Wgg2jet.tightiso">
+          <In FileName="/data/dukhep07/a/users/mliu/data/Wgg2012/MC/Wgg/Wgg2jet.root" Lumi="804" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<InputData Lumi="0.0" NEventsMax="-1" Type="MC" Version="Wg0jet.tightiso">
+          <In FileName="/data/dukhep07/a/users/mliu/data/Wgg2012/MC/WgJets/Wg0jet.root" Lumi="804" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<InputData Lumi="0.0" NEventsMax="-1" Type="MC" Version="Wg1jet.tightiso">
+          <In FileName="/data/dukhep07/a/users/mliu/data/Wgg2012/MC/WgJets/Wg1jet.root" Lumi="804" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<InputData Lumi="0.0" NEventsMax="-1" Type="MC" Version="Wg2jet.tightiso">
+          <In FileName="/data/dukhep07/a/users/mliu/data/Wgg2012/MC/WgJets/Wg2jet.root" Lumi="804" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<InputData Lumi="0.0" NEventsMax="-1" Type="MC" Version="Wg3jet.tightiso">
+          <In FileName="/data/dukhep07/a/users/mliu/data/Wgg2012/MC/WgJets/Wg3jet.root" Lumi="804" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<InputData Lumi="0.0" NEventsMax="-1" Type="MC" Version="Wg4jet.tightiso">
+          <In FileName="/data/dukhep07/a/users/mliu/data/Wgg2012/MC/WgJets/Wg4jet.root" Lumi="804" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<InputData Lumi="0.0" NEventsMax="-1" Type="MC" Version="Wg5jet.tightiso">
+          <In FileName="/data/dukhep07/a/users/mliu/data/Wgg2012/MC/WgJets/Wg5jet.root" Lumi="804" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<InputData Lumi="0.0" NEventsMax="-1"  Type="MC" Version="Zg.tightiso">
+          <In FileName="/data/dukhep07/a/users/mliu/data/Wgg2012/MC/ZgJets/Zg.root" Lumi="804" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<InputData Lumi="0.0" NEventsMax="-1" Type="MC" Version="WWee.tightiso">
+          <In FileName="/data/dukhep07/a/users/mliu/data/Wgg2012/MC/WW/WWee.root" Lumi="804" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<InputData Lumi="0.0" NEventsMax="-1" Type="MC" Version="WWem.tightiso">
+          <In FileName="/data/dukhep07/a/users/mliu/data/Wgg2012/MC/WW/WWem.root" Lumi="804" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<InputData Lumi="0.0" NEventsMax="-1" Type="MC" Version="WWetau.tightiso">
+          <In FileName="/data/dukhep07/a/users/mliu/data/Wgg2012/MC/WW/WWetau.root" Lumi="804" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<InputData Lumi="0.0" NEventsMax="-1" Type="MC" Version="WWme.tightiso">
+          <In FileName="/data/dukhep07/a/users/mliu/data/Wgg2012/MC/WW/WWme.root" Lumi="804" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<InputData Lumi="0.0" NEventsMax="-1" Type="MC" Version="WWmm.tightiso">
+          <In FileName="/data/dukhep07/a/users/mliu/data/Wgg2012/MC/WW/WWmm.root" Lumi="804" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<InputData Lumi="0.0" NEventsMax="-1" Type="MC" Version="WWmtau.tightiso">
+          <In FileName="/data/dukhep07/a/users/mliu/data/Wgg2012/MC/WW/WWmtau.root" Lumi="804" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<InputData Lumi="0.0" NEventsMax="-1" Type="MC" Version="WWtaue.tightiso">
+          <In FileName="/data/dukhep07/a/users/mliu/data/Wgg2012/MC/WW/WWtaue.root" Lumi="804" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<InputData Lumi="0.0" NEventsMax="-1" Type="MC" Version="WWtaum.tightiso">
+          <In FileName="/data/dukhep07/a/users/mliu/data/Wgg2012/MC/WW/WWtaum.root" Lumi="804" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<InputData Lumi="0.0" NEventsMax="-1" Type="MC" Version="WWtautau.tightiso">
+          <In FileName="/data/dukhep07/a/users/mliu/data/Wgg2012/MC/WW/WWtautau.root" Lumi="804" />
+	  <InputTree Name="Wgg" />
+	  <OutputTree Name="WggCandidates" />
+	</InputData>
+	<UserConfig>
+	  <Item Name="GoodRunList" Value="GRL/data12_8TeV.periodAllYear_HEAD_CoolRunQuery-00-04-08_All_Good.xml" /> 
+	  <Item Name="IgnoreGRL" Value="false"/>
+	  <Item Name="FSRveto" Value="0"/>
+	  <Item Name="TriggerName1" Value="EF_e24vhi_medium1"/>
+	  <Item Name="TriggerName2" Value="EF_e60_medium1"/>
+	  <Item Name="nPVCut" Value="true"/>
+	  <Item Name="Trigger" Value="true"/>
+	  <Item Name="LeptonPt" Value="25000"/>
+	  <Item Name="LeptonCut" Value="true"/>
+	  <Item Name="LeptonVeto" Value="true"/>
+	  <Item Name="MetCut" Value="25000"/>
+	  <Item Name="MtCut" Value="40000"/>
+	  <Item Name="PhotonPt" Value="15000"/>
+	  <Item Name="PhotonIDCut" Value="true"/>
+	  <Item Name="dRLeptonGammaCut" Value="0.7"/>
+	  <Item Name="PhotonIsolation" Value="ph_Etcone30_pt_corrected"/>
+	  <Item Name="PhotonIsoValue" Value="3000"/>
+	</UserConfig>
+    </Cycle>
+</JobConfiguration>
